@@ -4,16 +4,17 @@
 
 	<groupId>com.auth0</groupId>
 	<artifactId>spring-security-auth0-api-example</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
 	<name>spring-security-auth0-api-example</name>
 	<url>http://auth0.com</url>
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>3.2.8.RELEASE</spring.version>
+		<spring.version>4.1.7.RELEASE</spring.version>
 		<project.version>${project.version}</project.version>
-		<spring-security.version>3.2.4.RELEASE</spring-security.version>
+		<spring-security.version>4.0.1.RELEASE</spring-security.version>
+
 	</properties>
 
 	<dependencies>
@@ -22,14 +23,14 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>spring-security-auth0</artifactId>
-                        <version>0.2</version>
+                        <version>0.3</version>
 		</dependency>
 
 		<!-- Servlet dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -91,7 +92,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>3.2.10.RELEASE</version>
+			<version>4.1.7.RELEASE</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
