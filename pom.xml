@@ -9,7 +9,7 @@
 
 	<groupId>com.auth0</groupId>
   <artifactId>spring-security-auth0</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <name>spring-security-auth0</name>
   <url>http://auth0.com</url>
   <packaging>jar</packaging>
@@ -39,6 +39,13 @@
         <role>Developer Advocate</role>
       </roles>
     </developer>
+    <developer>
+      <name>Ashish Dasnurkar</name>
+      <id>ashishdasnurkar</id>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
   </developers>
 
   <scm>
@@ -53,9 +60,18 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>0.3</version>
+			<version>2.1.0</version>
 		</dependency>
-
+	    <dependency>
+	      <groupId>com.fasterxml.jackson.core</groupId>
+	      <artifactId>jackson-databind</artifactId>
+	      <version>2.0.1</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>commons-codec</groupId>
+	      <artifactId>commons-codec</artifactId>
+	      <version>1.4</version>
+	    </dependency>
 		<!-- Servlet dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
