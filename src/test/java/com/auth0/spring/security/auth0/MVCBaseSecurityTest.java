@@ -47,12 +47,12 @@ public abstract class MVCBaseSecurityTest {
 		this.mockMvc = webAppContextSetup(this.wac).addFilters(this.springSecurityFilterChain).build();
 	}
 
-	protected String generateTokenWithExpirationDate(int value, TimeUnit time) throws Exception {
+	protected String generateTokenWithExpirationDate(long value) throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("email", "auth0@test.com");
-
+		map.put("email_verified", "true");
 		//TODO check int overflow???
-		return tokenHelper.generateToken(map, (int) time.toSeconds(value));
+		return tokenHelper.generateToken(map, value);
 
 	}
 
