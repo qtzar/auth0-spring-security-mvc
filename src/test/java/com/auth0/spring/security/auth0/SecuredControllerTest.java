@@ -33,9 +33,7 @@ public class SecuredControllerTest extends MVCBaseSecurityTest {
 	public void shouldReturn200ForAValidToken() throws Exception {
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
-		System.out.println(c.getTimeInMillis());
 		c.add(Calendar.DATE, 1);
-		System.out.println((int)c.getTimeInMillis());
 		callUrlWithToken("/secured", generateTokenWithExpirationDate(c.getTimeInMillis() / 1000L)).andExpect(status().isOk());
 	}
 

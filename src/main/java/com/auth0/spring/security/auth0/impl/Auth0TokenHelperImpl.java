@@ -83,8 +83,6 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		System.out.println("clientSecret:" + clientSecret);
-		System.out.println("clientId:" + clientId);
 		Assert.notNull(clientSecret, "The client secret is not set for " + this.getClass());
 		Assert.notNull(clientId, "The client id is not set for " + this.getClass());
 
