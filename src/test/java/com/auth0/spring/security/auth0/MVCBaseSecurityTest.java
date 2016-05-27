@@ -48,9 +48,9 @@ public abstract class MVCBaseSecurityTest {
 	}
 
 	protected String generateTokenWithExpirationDate(long value) throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("email", "auth0@test.com");
-		map.put("email_verified", "true");
+		map.put("email_verified", true);
 		//TODO check int overflow???
 		return tokenHelper.generateToken(map, value);
 
