@@ -29,6 +29,8 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 
 	@Override
 	public String generateToken(Object object, long expiration) {
+		
+		Assert.isInstanceOf(java.util.Map.class, object, "Claims object is not a java.util.Map");
 
 		String payload, token;
 		try {
