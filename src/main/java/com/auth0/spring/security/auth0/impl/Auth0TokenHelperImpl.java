@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -13,11 +14,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.auth0.jwt.Algorithm;
-import com.auth0.jwt.ClaimSet;
+import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.JwtSigner;
+import com.auth0.jwt.JWTVerifyException;
 import com.auth0.spring.security.auth0.Auth0TokenHelper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, InitializingBean {
@@ -28,21 +28,20 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 	private String clientId = null;
 
 	@Override
-	public String generateToken(Object object, int expiration) {
+	public String generateToken(Object object, long expiration) {
+		
+		Assert.isInstanceOf(java.util.Map.class, object, "Claims object is not a java.util.Map");
 
 		String payload, token;
 		try {
 		
-			JwtSigner jwtSigner = new JwtSigner();
-			payload = new  ObjectMapper().writeValueAsString(object);
-
-		    ClaimSet claimSet = new ClaimSet();
-		    claimSet.setExp(expiration); // expire in 1 year
+			JWTSigner jwtSigner = new JWTSigner(Base64.decodeBase64(clientSecret));
+			HashMap<String, Object> claims = new HashMap<String, Object>();
+			claims.putAll((Map)object);
+			claims.put("exp", expiration);
 		    
-		    token = jwtSigner.encode(Algorithm.HS256, payload, "payload", new String(Base64.decodeBase64(clientSecret)), claimSet);
+		    token = jwtSigner.sign(claims);
 		
-		} catch (JsonProcessingException e) {
-			throw new Auth0RuntimeException(e);
 		} catch (Exception e) {
 			throw new Auth0RuntimeException(e);
 		}
@@ -54,7 +53,7 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 	@Override
 	public Object decodeToken(String token) {
 
-		JWTVerifier jwtVerifier = new JWTVerifier(clientSecret, clientId);
+		JWTVerifier jwtVerifier = new JWTVerifier(new Base64(true).decodeBase64(clientSecret), clientId);
 
 		
 		Map<String, Object> verify;
@@ -75,6 +74,8 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 		} catch (SignatureException e) {
 			throw new Auth0RuntimeException(e);
 		} catch (IOException e) {
+			throw new Auth0RuntimeException(e);
+		} catch (JWTVerifyException e) {
 			throw new Auth0RuntimeException(e);
 		}
 		

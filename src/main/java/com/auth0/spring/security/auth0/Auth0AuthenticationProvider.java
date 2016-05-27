@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.JWTVerifyException;
 
 /**
  * Class that verifies the JWT token and in case of beeing valid, it will set
@@ -70,6 +72,10 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
 			logger.debug("IOException thrown while decoding JWT token "
 					+ e.getLocalizedMessage());
 			throw AUTH_ERROR;
+		} catch (JWTVerifyException e) {
+			logger.debug("JWTVerifyException thrown while decoding JWT token "
+					+ e.getLocalizedMessage());
+			throw AUTH_ERROR;
 		}
 	}
 
@@ -86,7 +92,7 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
 			throw new RuntimeException(
 					"You must set which route pattern is used to check for users so that they must be authenticated");
 		}
-		jwtVerifier = new JWTVerifier(clientSecret, clientId);
+		jwtVerifier = new JWTVerifier(new Base64(true).decodeBase64(clientSecret), clientId);
 	}
 
 	public String getSecuredRoute() {
