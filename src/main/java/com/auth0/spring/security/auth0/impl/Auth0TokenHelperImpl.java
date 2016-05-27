@@ -33,7 +33,6 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
 		String payload, token;
 		try {
 		
-			new Base64(true);
 			JWTSigner jwtSigner = new JWTSigner(Base64.decodeBase64(clientSecret));
 			HashMap<String, Object> claims = new HashMap<String, Object>();
 			claims.putAll((Map)object);
