@@ -20,81 +20,63 @@ import org.springframework.web.filter.GenericFilterBean;
 
 /**
  * Filter responsible to intercept the JWT in the HTTP header and attempt an authentication. It delegates the authentication to the authentication manager
- * 
- * @author Daniel Teixeira
  */
 public class Auth0AuthenticationFilter extends GenericFilterBean {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	private AuthenticationEntryPoint entryPoint;
+    private AuthenticationEntryPoint entryPoint;
 
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        final HttpServletRequest request = (HttpServletRequest) req;
+        final HttpServletResponse response = (HttpServletResponse) res;
+        if (request.getMethod().equals("OPTIONS")) {
+            // CORS request
+            chain.doFilter(request, response);
+            return;
+        }
+        final String jwt = getToken(request);
+        if (jwt != null) {
+            try {
+                final Auth0JWTToken token = new Auth0JWTToken(jwt);
+                final Authentication authResult = authenticationManager.authenticate(token);
+                SecurityContextHolder.getContext().setAuthentication(authResult);
+            } catch (AuthenticationException failed) {
+                SecurityContextHolder.clearContext();
+                entryPoint.commence(request, response, failed);
+                return;
+            }
+        }
+        chain.doFilter(request, response);
+    }
 
-		final HttpServletRequest request = (HttpServletRequest) req;
-		final HttpServletResponse response = (HttpServletResponse) res;
-		
-		if (request.getMethod().equals("OPTIONS")) {
-			// This is CORS request
-			chain.doFilter(request, response);
-			return;
-		}
+    /**
+     * Looks at the authorization bearer and extracts the JWT
+     */
+    protected String getToken(HttpServletRequest httpRequest) {
+        final String authorizationHeader = httpRequest.getHeader("authorization");
+        if (authorizationHeader == null) {
+            // "Unauthorized: No Authorization header was found"
+            return null;
+        }
+        final String[] parts = authorizationHeader.split(" ");
+        if (parts.length != 2) {
+            // "Unauthorized: Format is Authorization: Bearer [token]"
+            return null;
+        }
+        final String scheme = parts[0];
+        final String credentials = parts[1];
+        final Pattern pattern = Pattern.compile("^Bearer$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(scheme).matches() ? credentials : null;
+    }
 
-		String jwt = getToken((HttpServletRequest) request);
+    public AuthenticationEntryPoint getEntryPoint() {
+        return entryPoint;
+    }
 
-		if (jwt != null) {
-			try {
-
-				Auth0JWTToken token = new Auth0JWTToken(jwt);
-				Authentication authResult = authenticationManager.authenticate(token);
-				SecurityContextHolder.getContext().setAuthentication(authResult);
-
-			} catch (AuthenticationException failed) {
-				SecurityContextHolder.clearContext();
-				entryPoint.commence(request, response, failed);
-				return;
-			}
-		}
-
-		chain.doFilter(request, response);
-
-	}
-
-	/**
-	 * Looks at the authorization bearer and extracts the JWT
-	 */
-	private String getToken(HttpServletRequest httpRequest) {
-		String token = null;
-		final String authorizationHeader = httpRequest.getHeader("authorization");
-		if (authorizationHeader == null) {
-			// "Unauthorized: No Authorization header was found"
-			return null;
-		}
-
-		String[] parts = authorizationHeader.split(" ");
-		if (parts.length != 2) {
-			// "Unauthorized: Format is Authorization: Bearer [token]"
-			return null;
-
-		}
-
-		String scheme = parts[0];
-		String credentials = parts[1];
-
-		Pattern pattern = Pattern.compile("^Bearer$", Pattern.CASE_INSENSITIVE);
-		if (pattern.matcher(scheme).matches()) {
-			token = credentials;
-		}
-		return token;
-	}
-
-	public AuthenticationEntryPoint getEntryPoint() {
-		return entryPoint;
-	}
-
-	public void setEntryPoint(AuthenticationEntryPoint entryPoint) {
-		this.entryPoint = entryPoint;
-	}
+    public void setEntryPoint(AuthenticationEntryPoint entryPoint) {
+        this.entryPoint = entryPoint;
+    }
 
 }

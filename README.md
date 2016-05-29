@@ -4,7 +4,7 @@ This module allows you to use Auth0 with Spring Security. It'll validate the JWT
 
 ## Learn how to use it
 
-[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security) to learn how to use this SDK. It's exremely simple
+[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security) to learn how to use this SDK.
 
 ---
 
@@ -26,7 +26,7 @@ Auth0 helps you to:
 
 ## Acknowledgements
 
-Very big thanks to Daniel Teixeira from [calipho-sib](https://github.com/calipho-sib) for creating the initial version of this SDK.
+Thank you to Daniel Teixeira from [calipho-sib](https://github.com/calipho-sib) for creating the initial version of this SDK.
 
 ## Issue Reporting
 

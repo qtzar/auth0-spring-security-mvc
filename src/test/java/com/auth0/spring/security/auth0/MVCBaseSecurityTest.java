@@ -22,8 +22,6 @@ import com.auth0.spring.security.auth0.Auth0TokenHelper;
 
 /**
  * Base Spring security tests including spring security filter chain configured
- * 
- * @author Daniel Teixeira
  */
 
 @WebAppConfiguration
@@ -31,37 +29,37 @@ import com.auth0.spring.security.auth0.Auth0TokenHelper;
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class MVCBaseSecurityTest {
 
-	@Autowired
-	protected WebApplicationContext wac;
+    @Autowired
+    protected WebApplicationContext wac;
 
-	@Autowired
-	private FilterChainProxy springSecurityFilterChain;
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
 
-	@Autowired
-	private Auth0TokenHelper<Object> tokenHelper;
+    @Autowired
+    private Auth0TokenHelper<Object> tokenHelper;
 
-	protected MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
-	@Before
-	public void setup() {
-		this.mockMvc = webAppContextSetup(this.wac).addFilters(this.springSecurityFilterChain).build();
-	}
+    @Before
+    public void setup() {
+        this.mockMvc = webAppContextSetup(this.wac).addFilters(this.springSecurityFilterChain).build();
+    }
 
-	protected String generateTokenWithExpirationDate(long value) throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("email", "auth0@test.com");
-		map.put("email_verified", true);
-		//TODO check int overflow???
-		return tokenHelper.generateToken(map, value);
+    protected String generateTokenWithExpirationDate(long value) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("email", "auth0@test.com");
+        map.put("email_verified", true);
+        //TODO check int overflow???
+        return tokenHelper.generateToken(map, value);
 
-	}
+    }
 
-	protected ResultActions callUrlWithoutToken(String url) throws Exception {
-		return this.mockMvc.perform(get(url));
-	}
+    protected ResultActions callUrlWithoutToken(String url) throws Exception {
+        return this.mockMvc.perform(get(url));
+    }
 
-	protected ResultActions callUrlWithToken(String url, String token) throws Exception {
-		return this.mockMvc.perform(get(url).header("Authorization", "Bearer " + token));
-	}
+    protected ResultActions callUrlWithToken(String url, String token) throws Exception {
+        return this.mockMvc.perform(get(url).header("Authorization", "Bearer " + token));
+    }
 
 }
