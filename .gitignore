@@ -3,5 +3,6 @@ bin/
 target/
 .classpath
 .project
+.mvn
 spring-security-auth0.iml
 examples/api-example/spring-security-auth0-api-example.iml
