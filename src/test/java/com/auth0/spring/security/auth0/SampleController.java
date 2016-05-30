@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SampleController {
 
-
     @RequestMapping(value = "secured")
     @ResponseBody
     public String secured() {
@@ -22,6 +21,5 @@ public class SampleController {
     public String unsecured() {
         return "This is an unsecured url";
     }
-
 
 }

@@ -1,12 +1,5 @@
 package com.auth0.spring.security.auth0;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +11,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.auth0.spring.security.auth0.Auth0TokenHelper;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Base Spring security tests including spring security filter chain configured
  */
 
 @WebAppConfiguration
-@ContextConfiguration("classpath:application-context.xml")
+@ContextConfiguration(locations = {"classpath:application-context.xml", "classpath:auth0-security-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class MVCBaseSecurityTest {
 
