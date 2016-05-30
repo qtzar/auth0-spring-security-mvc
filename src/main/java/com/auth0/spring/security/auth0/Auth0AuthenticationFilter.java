@@ -37,18 +37,18 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
             return;
         }
         final String jwt = getToken(request);
-        if (jwt == null) {
-          return;
+        if (jwt != null) {
+            try {
+                final Auth0JWTToken token = new Auth0JWTToken(jwt);
+                final Authentication authResult = authenticationManager.authenticate(token);
+                SecurityContextHolder.getContext().setAuthentication(authResult);
+            } catch (AuthenticationException failed) {
+                SecurityContextHolder.clearContext();
+                entryPoint.commence(request, response, failed);
+                return;
+            }
         }
-        try {
-            final Auth0JWTToken token = new Auth0JWTToken(jwt);
-            final Authentication authResult = authenticationManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(authResult);
-            chain.doFilter(request, response);
-        } catch (AuthenticationException failed) {
-            SecurityContextHolder.clearContext();
-            entryPoint.commence(request, response, failed);
-        }
+        chain.doFilter(request, response);
     }
 
     /**
