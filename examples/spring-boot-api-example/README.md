@@ -40,7 +40,7 @@ mvn clean package
 ```
 
 ```sh
-java -jar target/auth0-springboot-api-0.0.1-SNAPSHOT.jar
+java -jar target/auth-spring-boot-api-example-0.0.1-SNAPSHOT.jar
 ```
 
 ### Test the API
