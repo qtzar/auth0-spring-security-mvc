@@ -45,7 +45,7 @@ java -jar target/auth-spring-boot-api-example-0.0.1-SNAPSHOT.jar
 
 ### Test the API
 
-To run a request against the two exposed API endpoints, simply make a GET or POST request as follows (using any http library / technology you choose):
+To run a request against the exposed API endpoints, simply make GET or POST requests as follows (using any http client you choose):
 
 
 #### Public endpoint:
