@@ -1,6 +1,20 @@
 ### Spring Boot / Auth0 JWT API
 
-Demonstrates using Auth0 with SpringBoot and Spring Security to create public and secured Controller / RestController endpoints.
+Demonstrates using Auth0 with Spring Boot and Spring Security to create public and secured Controller / RestController endpoints.
+
+This example relies upon `Spring Boot`.
+
+Benefits of Spring Boot, in particular for traditional server-side web application / microservices architectures:
+
+**Automatic configuration** - Spring Boot can automatically provide configuration for application functionality common to many Spring applications.
+
+**Starter dependencies** - Tell Spring Boot what kind of functionality you need, and it will ensure that the libraries needed are added to the build.
+
+**Command-line interface** - Optional feature of Spring Boot lets you write complete applications with just application code, but no need for a traditional
+ project build.
+
+**The Actuator** - Gives you insight into what's going on inside of a running Spring Boot application.
+
 
 Leverages Auth0 dependencies:
 
@@ -40,7 +54,7 @@ mvn clean package
 ```
 
 ```sh
-java -jar target/auth-spring-boot-api-example-0.0.1-SNAPSHOT.jar
+java -jar target/auth0-spring-boot-api-example-0.1.0-SNAPSHOT.jar
 ```
 
 ### Test the API
@@ -51,30 +65,34 @@ To run a request against the exposed API endpoints, simply make GET or POST requ
 #### Public endpoint:
 
 ```
-curl -X GET -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:8080/ping"
+curl -X GET -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:3001/ping"
 ```
 
 #### Secured endpoints:
 
 ```
-curl -X GET -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:8080/secured/ping"
+curl -X GET -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:3001/secured/ping"
 ```
 
 or
 
 ```
-curl -X GET -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:8080/secured/getUsername"
+curl -X GET -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" "http://localhost:3001/secured/getUsername"
 ```
 
 or
 
 ```
-curl -X POST -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{"hello":"world"}' "http://localhost:8080/secured/post"
+curl -X POST -H "Authorization: Bearer {{YOUR JWT TOKEN}}" -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{"hello":"world"}' "http://localhost:3001/secured/post"
 ```
+
+There is also a [postman](https://www.getpostman.com) collection (postman/auth0-spring-boot-api-example.postman_collection.json) published in case
+you use postman for your API testing. Again, replace {{JWT_TOKEN}} with your token (or use Postman's `manage environments` feature to map JWT_TOKEN key
+to your jwt token string).
 
 Key Point: Remember to include the `Authorization: Bearer {{YOUR JWT TOKEN}}"` header. You can generate a JWT perhaps easiest by downloading
 a web client sample from the Auth0 Dashboard for the same application you defined above, and then by logging using that App and retrieving the
-generated JWT token that way. Alternatively, use the Auth0 [auth api get clients by id endpoint](https://auth0.com/docs/api/management/v2#!/Clients/get_clients_by_id)
+generated JWT token that way.
 
 ## What is Auth0?
 

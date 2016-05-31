@@ -7,7 +7,7 @@ import java.util.Date;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class SecuredControllerTest extends MVCBaseSecurityTest {
+public class Auth0AuthenticationTest extends AbstractAuth0AuthenticationTest {
 
     @Test
     public void shouldReturn403WithoutToken() throws Exception {
@@ -41,7 +41,6 @@ public class SecuredControllerTest extends MVCBaseSecurityTest {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         c.add(Calendar.DATE, 1);
-
         callUrlWithToken("/unsecured", generateTokenWithExpirationDate(c.getTimeInMillis() / 1000L)).andExpect(status().isOk());
     }
 

@@ -1,10 +1,5 @@
-package com.example.security;
+package com.auth0.spring.security.auth0;
 
-import com.auth0.spring.security.auth0.Auth0AuthenticationEntryPoint;
-import com.auth0.spring.security.auth0.Auth0AuthenticationFilter;
-import com.auth0.spring.security.auth0.Auth0AuthenticationProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +9,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 @Configuration
 @EnableWebSecurity(debug = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    final static Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+public class Auth0Configuration extends WebSecurityConfigurerAdapter {
 
     @Value(value = "${auth0.clientId}")
     private String clientId;
@@ -28,27 +22,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value(value = "${auth0.clientSecret}")
     private String clientSecret;
 
-    @Value(value = "${auth0.domain}")
-    private String issuer;
-
     @Value(value = "${auth0.securedRoute}")
     private String securedRoute;
 
-    //Required for Spring Security and Auth0 Configuration
     @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Bean(name = "auth0AuthenticationManager")
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
     @Bean
-    public CORSFilter simpleCORSFilter() {
-        return new CORSFilter();
+    public Auth0CORSFilter simpleCORSFilter() {
+        return new Auth0CORSFilter();
     }
 
     @Bean(name = "auth0AuthenticationProvider")
     public Auth0AuthenticationProvider auth0AuthenticationProvider() {
-        logger.info("{}:{}", clientId, clientSecret);
         final Auth0AuthenticationProvider authenticationProvider = new Auth0AuthenticationProvider();
         authenticationProvider.setClientId(clientId);
         authenticationProvider.setClientSecret(clientSecret);
@@ -75,8 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Disable CSRF - Not required when using JWT tokens (not cookies)
-        // From Spring Security 4 it is enabled by default
+        // Disable CSRF for JWT usage
         http
                 .csrf().disable()
                 .addFilterAfter(auth0AuthenticationFilter(auth0AuthenticationEntryPoint()), SecurityContextPersistenceFilter.class)
@@ -84,11 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers(securedRoute).authenticated();
+        // ensure JWT should be sent with every request - no session
+        http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
-    // Not required for the Spring Security implementation, but offers Auth0 API access
-    @Bean
-    public Auth0Client auth0Client() {
-        return new Auth0Client(clientId, issuer);
-    }
 }

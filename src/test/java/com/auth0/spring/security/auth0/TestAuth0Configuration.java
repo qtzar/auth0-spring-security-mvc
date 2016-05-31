@@ -1,15 +1,16 @@
-package com.example.main;
+package com.auth0.spring.security.auth0;
 
+import com.auth0.spring.security.auth0.impl.Auth0TokenHelperImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
+@ComponentScan(basePackages = {"com.auth0.spring.security.auth0"})
 @PropertySources({
-        @PropertySource("classpath:application.properties"),
         @PropertySource("classpath:auth0.properties")
 })
-public class ApplicationConfig {
+public class TestAuth0Configuration {
 
     @Value(value = "${auth0.clientId}")
     private String clientId;
@@ -17,21 +18,17 @@ public class ApplicationConfig {
     @Value(value = "${auth0.clientSecret}")
     private String clientSecret;
 
-    @Value(value = "${auth0.domain}")
-    private String issuer;
-
-    @Value(value = "${auth0.securedRoute}")
-    protected String securedRoute;
-
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    // Not required for the Spring Security implementation, but offers Auth0 API access
-    @Bean
-    public Auth0Client auth0Client() {
-        return new Auth0Client(clientId, issuer);
+    @Bean(name = "auth0TokenHelper")
+    public Auth0TokenHelper<Object> auth0TokenHelper() {
+        final Auth0TokenHelperImpl auth0TokenHelper = new Auth0TokenHelperImpl();
+        auth0TokenHelper.setClientId(clientId);
+        auth0TokenHelper.setClientSecret(clientSecret);
+        return auth0TokenHelper;
     }
 
 }

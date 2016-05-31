@@ -25,7 +25,7 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
         InitializingBean {
 
     private static final AuthenticationException AUTH_ERROR =
-            new Auth0TokenException("Authentication error occured");
+            new Auth0TokenException("Authentication Error");
 
     private JWTVerifier jwtVerifier = null;
     private String clientSecret = null;

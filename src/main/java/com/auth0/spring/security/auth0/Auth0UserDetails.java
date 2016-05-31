@@ -1,14 +1,14 @@
 package com.auth0.spring.security.auth0;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementation of UserDetails in compliance with the decoded object returned by the Auth0 JWT
@@ -17,7 +17,7 @@ public class Auth0UserDetails implements UserDetails {
 
     private static final long serialVersionUID = 2058797193125711681L;
 
-    private static final Log logger = LogFactory.getLog(Auth0UserDetails.class);
+    private static final Logger logger = LoggerFactory.getLogger(Auth0UserDetails.class);
 
     private Map<String, Object> details;
     private String username;

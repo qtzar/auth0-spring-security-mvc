@@ -7,9 +7,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
-// Do NOT import auth0-security-context.xml.
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example"})
+@ComponentScan(basePackages = {"com.example", "com.auth0"})
 @EnableAutoConfiguration
 @PropertySource("classpath:auth0.properties")
 public class Application {

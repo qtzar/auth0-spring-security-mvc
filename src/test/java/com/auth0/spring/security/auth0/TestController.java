@@ -4,11 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * A controller exposing secured and unsecured methods (defined on auth0-security-context.xml)
- */
 @Controller
-public class SampleController {
+public class TestController {
 
     @RequestMapping(value = "secured")
     @ResponseBody

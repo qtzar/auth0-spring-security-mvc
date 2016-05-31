@@ -9,5 +9,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-spring-security-boot-auth0-api-example.iml
+auth0-spring-boot-api-example.iml
+auth-spring-boot-api-example.iml
 

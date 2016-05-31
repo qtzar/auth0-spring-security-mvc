@@ -1,7 +1,7 @@
 package com.example.controllers;
 
-import com.example.security.Auth0Client;
 import com.auth0.spring.security.auth0.Auth0JWTToken;
+import com.example.main.Auth0Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

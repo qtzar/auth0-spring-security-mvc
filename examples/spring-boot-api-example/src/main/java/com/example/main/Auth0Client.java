@@ -1,4 +1,4 @@
-package com.example.security;
+package com.example.main;
 
 import com.auth0.Auth0;
 import com.auth0.authentication.AuthenticationAPIClient;

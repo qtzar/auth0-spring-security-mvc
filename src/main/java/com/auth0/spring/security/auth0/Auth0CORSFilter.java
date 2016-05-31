@@ -1,4 +1,4 @@
-package com.example.security;
+package com.auth0.spring.security.auth0;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class CORSFilter implements Filter {
+public class Auth0CORSFilter implements Filter {
 
     @Override
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) throws IOException, ServletException {
@@ -26,7 +26,7 @@ public class CORSFilter implements Filter {
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
-
+        // empty
     }
 
     @Override
