@@ -1,11 +1,11 @@
-# Auth0 Spring Security
+# Auth0 Spring Security MVC
 
-A modern Java Spring library that allows you to use Auth0 with Spring Security. Leverages Spring Boot dependencies.
+A modern Java Spring library that allows you to use Auth0 with Spring Security for server-side MVC web apps. Leverages Spring Boot dependencies.
 Validates the JWT from Auth0 in every API call to assert authentication according to configuration.
 
 ## Learn how to use it
 
-[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security) to learn how to use this SDK.
+[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security-mvc) to learn how to use this SDK.
 
 ---
 
