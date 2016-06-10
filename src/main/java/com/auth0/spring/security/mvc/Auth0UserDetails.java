@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of Spring Security UserDetails Object
@@ -31,6 +32,7 @@ public class Auth0UserDetails implements UserDetails {
     private boolean emailVerified;
     private String nickname;
     private String picture;
+    private Map<String, Object> extraInfo;
     private List<UserIdentity> identities;
     private ArrayList<GrantedAuthority> authorities;
 
@@ -46,18 +48,18 @@ public class Auth0UserDetails implements UserDetails {
         this.name = auth0User.getName();
         this.email = auth0User.getEmail();
         if (email != null) {
-            emailVerified = auth0User.getEmailVerified();
+            emailVerified = auth0User.isEmailVerified();
         }
         this.nickname = auth0User.getNickname();
         this.picture = auth0User.getPicture();
         this.identities = auth0User.getIdentities();
-
+        this.extraInfo = auth0User.getExtraInfo();
         setupAuthorities(auth0User);
     }
 
     /**
      *  @TODO - Configure the application to know the GrantedAuthority strategy.
-     * For now, naively Roles takes Precedence then Groups...
+     * For now, Roles takes Precedence then Groups...
      *
      * @param auth0User
      */

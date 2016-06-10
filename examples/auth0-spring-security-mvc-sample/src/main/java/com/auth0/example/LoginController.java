@@ -1,7 +1,7 @@
 package com.auth0.example;
 
 import com.auth0.web.Auth0Config;
-import com.auth0.web.NonceFactory;
+import com.auth0.web.NonceUtils;
 import com.auth0.web.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,17 +29,13 @@ public class LoginController {
     protected String login(final Map<String, Object> model, final HttpServletRequest req) {
         logger.debug("Performing login");
         detectError(model);
-        initializeNonce(req);
+        // add Nonce to storage
+        NonceUtils.addNonceToStorage(req);
         model.put("clientId", auth0Config.getClientId());
         model.put("domain", auth0Config.getDomain());
-        model.put("state", "nonce=" + SessionUtils.getState(req));
+        model.put("loginCallback", auth0Config.getLoginCallback());
+        model.put("state", SessionUtils.getState(req));
         return "login";
-    }
-
-    private void initializeNonce(final HttpServletRequest req) {
-        if (SessionUtils.getState(req) == null) {
-            SessionUtils.setState(req, NonceFactory.create());
-        }
     }
 
     private void detectError(final Map<String, Object> model) {

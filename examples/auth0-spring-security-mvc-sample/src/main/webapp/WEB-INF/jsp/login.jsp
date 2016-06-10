@@ -29,7 +29,7 @@
                 },
                 responseType: 'code',
                 popup: false,
-                callbackURL: '${fn:replace(pageContext.request.requestURL, pageContext.request.requestURI, '')}' + '/callback'
+                callbackURL: '${fn:replace(pageContext.request.requestURL, pageContext.request.requestURI, '')}${loginCallback}'
             });
         });
     </script>

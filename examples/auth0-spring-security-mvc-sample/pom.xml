@@ -80,20 +80,20 @@
 
         <dependency>
             <groupId>com.auth0</groupId>
-            <artifactId>auth0-spring-boot-servlet</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>auth0-spring-mvc</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>auth0-spring-security-mvc</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>auth0</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.0</version>
         </dependency>
 
         <dependency>
