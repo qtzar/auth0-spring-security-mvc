@@ -7,6 +7,8 @@ Validates the JWT from Auth0 in every API call to assert authentication accordin
 
 [Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security-mvc) to learn how to use this SDK.
 
+See also: [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
+
 ---
 
 ## What is Auth0?
