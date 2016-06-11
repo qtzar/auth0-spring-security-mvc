@@ -26,7 +26,7 @@ public class Auth0TokenHelperImpl implements Auth0TokenHelper<Object>, Initializ
         Assert.isInstanceOf(java.util.Map.class, object, "Claims object is not a java.util.Map");
         try {
             final JWTSigner jwtSigner = new JWTSigner(Base64.decodeBase64(clientSecret));
-            final HashMap<String, Object> claims = new HashMap<String, Object>();
+            final HashMap<String, Object> claims = new HashMap<>();
             claims.putAll((Map) object);
             claims.put("exp", expiration);
             final String token = jwtSigner.sign(claims);

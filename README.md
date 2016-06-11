@@ -5,9 +5,11 @@ Validates the JWT from Auth0 in every API call to assert authentication accordin
 
 ## Learn how to use it
 
-[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security-mvc) to learn how to use this SDK.
+Right now, the best way to learn how to use this library is to study the [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
+and the README for that sample. Our official documentation shall at the link below shall be fully updated shortly, together with Maven publication of the latest release. For
+dev testing, just install locally with maven to get started right away.
 
-See also: [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
+[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security-mvc) to learn how to use this SDK.
 
 ---
 
