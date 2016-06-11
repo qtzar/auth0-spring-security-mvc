@@ -7,7 +7,6 @@ import com.auth0.web.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,6 @@ public class HomeController {
         this.auth0Config = auth0Config;
     }
 
-//    @Secured({"ROLE_SUPERUSER"})
     @RequestMapping(value="/portal/home", method = RequestMethod.GET)
     protected String home(final Map<String, Object> model, final HttpServletRequest req, final Principal principal) {
 

@@ -23,8 +23,6 @@ public class Auth0UserDetails implements UserDetails {
 
     private static final Logger logger = LoggerFactory.getLogger(Auth0UserDetails.class);
 
-    //@TODO - add other attributes are required - make provison for access to underlying userProfile object
-    // so ad-hoc attributes can also be queried?
     private String userId;
     private String username;
     private String name;
@@ -118,6 +116,7 @@ public class Auth0UserDetails implements UserDetails {
         return identities;
     }
 
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
@@ -125,6 +124,7 @@ public class Auth0UserDetails implements UserDetails {
     /**
      * Will return UnsupportedOperationException
      */
+    @Override
     public String getPassword() {
         throw new UnsupportedOperationException("Password is protected");
     }
@@ -132,25 +132,53 @@ public class Auth0UserDetails implements UserDetails {
     /**
      * Gets the email if it exists otherwise it returns the user_id
      */
+    @Override
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Indicates whether the user's account has expired. An expired account cannot be
+     * authenticated.
+     *
+     * @return <code>true</code> if the user's account is valid (ie non-expired),
+     * <code>false</code> if no longer valid (ie expired)
+     */
+    @Override
     public boolean isAccountNonExpired() {
+        // @TODO - review this
         return false;
     }
 
+    /**
+     * Indicates whether the user is locked or unlocked. A locked user cannot be
+     * authenticated.
+     *
+     * @return <code>true</code> if the user is not locked, <code>false</code> otherwise
+     */
+    @Override
     public boolean isAccountNonLocked() {
+        // @TODO - review this
         return false;
     }
 
+    /**
+     * Indicates whether the user's credentials (password) has expired. Expired
+     * credentials prevent authentication.
+     *
+     * @return <code>true</code> if the user's credentials are valid (ie non-expired),
+     * <code>false</code> if no longer valid (ie expired)
+     */
+    @Override
     public boolean isCredentialsNonExpired() {
+        // @TODO - review this
         return false;
     }
 
     /**
      * Will return true if the email is verified, otherwise it will return false
      */
+   @Override
     public boolean isEnabled() {
         return emailVerified;
     }

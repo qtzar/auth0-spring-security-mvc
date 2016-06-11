@@ -1,8 +1,11 @@
-package com.auth0.spring.security.mvc;
+package com.auth0.example;
 
+import com.auth0.spring.security.mvc.Auth0AuthenticationEntryPoint;
+import com.auth0.spring.security.mvc.Auth0AuthenticationFilter;
+import com.auth0.spring.security.mvc.Auth0AuthenticationProvider;
+import com.auth0.spring.security.mvc.Auth0CORSFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,22 +16,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
-/**
- * Lightweight default configuration that offers basic authorization checks for authenticated
- * users on secured endpoint, and sets up a Principal user object with granted authorities
- *
- * For simple apps, this is sufficient, however for applications wishing to specify fine-grained
- * endpoint access restrictions, use Role / Group level endpoint authorization etc, then this configuration
- * should be disabled and a copy, augmented with your own requirements provided. See Sample app for example
- *
- */
+
 @Configuration
 @EnableWebSecurity(debug = true)
-@ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
-public class Auth0Configuration extends WebSecurityConfigurerAdapter {
+public class AppConfig extends WebSecurityConfigurerAdapter {
 
     @Value(value = "${auth0.clientId}")
-    private String clientId;
+    String clientId;
 
     @Value(value = "${auth0.clientSecret}")
     private String clientSecret;
@@ -78,12 +72,21 @@ public class Auth0Configuration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // Disable CSRF for JWT usage
         http
-                .csrf().disable()
+                .csrf()
+                .disable();
+        // Add Auth0 Authentication Filter
+        http
                 .addFilterAfter(auth0AuthenticationFilter(auth0AuthenticationEntryPoint()), SecurityContextPersistenceFilter.class)
-                .addFilterBefore(simpleCORSFilter(), Auth0AuthenticationFilter.class)
-                .antMatcher("/**")
+                .addFilterBefore(simpleCORSFilter(), Auth0AuthenticationFilter.class);
+
+        // Apply the Authentication and Authorization Strategies your application endpoints require
+        http
                 .authorizeRequests()
-                .antMatchers(securedRoute).authenticated();
+                .antMatchers("/css/**", "/fonts/**", "/js/**", "/login").permitAll()
+//                .antMatchers("/portal/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .antMatchers("/portal/**").hasAuthority("ROLE_ADMIN")
+                .antMatchers(getSecuredRoute()).authenticated();
+
         // ensure session management is enabled - we must retain session state
         http
                 .sessionManagement()
@@ -101,4 +104,5 @@ public class Auth0Configuration extends WebSecurityConfigurerAdapter {
     protected String getSecuredRoute() {
         return securedRoute;
     }
+
 }
