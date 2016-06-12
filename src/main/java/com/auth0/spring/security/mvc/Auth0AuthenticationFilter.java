@@ -2,6 +2,7 @@ package com.auth0.spring.security.mvc;
 
 import com.auth0.authentication.result.Credentials;
 import com.auth0.web.SessionUtils;
+import com.auth0.web.Tokens;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -28,11 +29,11 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
 
     private AuthenticationEntryPoint entryPoint;
 
-    protected boolean tokensExist(final Credentials credentials) {
-        if (credentials == null) {
+    protected boolean tokensExist(final Tokens tokens) {
+        if (tokens == null) {
             return false;
         }
-        return credentials.getIdToken() != null && credentials.getAccessToken() != null;
+        return tokens.getIdToken() != null && tokens.getAccessToken() != null;
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -43,7 +44,7 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        final Credentials tokens = SessionUtils.getTokens(request);
+        final Tokens tokens = SessionUtils.getTokens(request);
         if (tokensExist(tokens)) {
             try {
                 final String jwt = tokens.getIdToken();

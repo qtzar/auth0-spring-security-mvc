@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifyException;
 import com.auth0.web.Auth0User;
 import com.auth0.web.SessionUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,11 +39,9 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
     private final Log logger = LogFactory.getLog(getClass());
 
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-
-        final String token = ((Auth0JWTToken) authentication).getJwt();
-        logger.info("Trying to authenticate with token: " + token);
-
         try {
+            final String token = ((Auth0JWTToken) authentication).getJwt();
+            logger.info("Trying to authenticate with token: " + token);
             final Auth0JWTToken tokenAuth = ((Auth0JWTToken) authentication);
             final Map<String, Object> decoded = jwtVerifier.verify(token);
             logger.debug("Decoded JWT token" + decoded);
@@ -51,10 +50,7 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
             final ServletRequestAttributes servletReqAttr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpServletRequest req = servletReqAttr.getRequest();
             final Auth0User auth0User = SessionUtils.getAuth0User(req);
-            // precaution, the flow would ordinarily ensure this has been setup
-            if (auth0User == null) {
-                throw new IllegalStateException("No Auth0User object found in session - unexpected state.");
-            }
+            Validate.notNull(auth0User);
             tokenAuth.setPrincipal(new Auth0UserDetails(auth0User));
             tokenAuth.setDetails(decoded);
             return authentication;
