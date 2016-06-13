@@ -84,10 +84,9 @@ public class Auth0Configuration extends WebSecurityConfigurerAdapter {
                 .antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers(securedRoute).authenticated();
-        // ensure session management is enabled - we must retain session state
-        http
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
+        // Auth0 library will will control session management explicitly - not spring security
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
     }
 
     protected String getClientId() {
