@@ -11,17 +11,18 @@ This library will allow you to write applications that:
  4. Able to secure Java Services using method level security annotations for role based access control
  5. Able to leverage the Spring Security JSTL tag library to add role level security to your JSP pages.
 
- Additionally, you can also set up multiple Auth0 Spring Security web applications and configure them to work together using
- Single Sign-On (SSO). if you are additionally interested in having Single Sign-On (SSO) between Java Spring Security configured
- applications, then please take a look at our [auth0-spring-security-mvc-sso-sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sso-sample)
 
- Finally, note that the pattern this library depends upon is the OIDC / Oauth2 Authorization Code Grant Flow - a server-side callback
- is used, and a `code` is exchanged for tokens and user profile information. Hence this library is suitable for `traditional` server-side
- web applications.
+Additionally, you can also set up multiple Auth0 Spring Security web applications and configure them to work together using
+Single Sign-On (SSO). if you are additionally interested in having Single Sign-On (SSO) between Java Spring Security configured
+applications, then please take a look at our [auth0-spring-security-mvc-sso-sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sso-sample)
 
- If you are building a Single Page Application (SPA) using say React or Angular etc, then you should take a look at this repository
- instead [https://github.com/auth0/auth0-spring-security-api](https://github.com/auth0/auth0-spring-security-api). There is an associated
- sample for that project too - [auth0-spring-security-api-sample](https://github.com/auth0-samples/auth0-spring-security-api-sample)
+Finally, note that the pattern this library depends upon is the OIDC / Oauth2 Authorization Code Grant Flow - a server-side callback
+is used, and a `code` is exchanged for tokens and user profile information. Hence this library is suitable for `traditional` server-side
+web applications.
+
+If you are building a Single Page Application (SPA) using say React or Angular etc, then you should take a look at this repository
+instead [https://github.com/auth0/auth0-spring-security-api](https://github.com/auth0/auth0-spring-security-api). There is an associated
+sample for that project too - [auth0-spring-security-api-sample](https://github.com/auth0-samples/auth0-spring-security-api-sample)
 
 
 ## Download
