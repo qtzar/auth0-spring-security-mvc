@@ -10,7 +10,7 @@
 
     <groupId>com.auth0</groupId>
     <artifactId>auth0-spring-security-mvc</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>auth0-spring-security-mvc</name>
     <description>Integrates Auth0 with Spring Boot and Spring Security for java spring server-side MVC web apps</description>
     <url>http://auth0.com</url>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>auth0-spring-mvc</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
         <!--Other Third Party-->
