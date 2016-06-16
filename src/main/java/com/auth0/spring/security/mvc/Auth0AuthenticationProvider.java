@@ -29,14 +29,19 @@ import java.util.Map;
 public class Auth0AuthenticationProvider implements AuthenticationProvider,
         InitializingBean {
 
+    private final Log logger = LogFactory.getLog(getClass());
+
     private static final AuthenticationException AUTH_ERROR =
             new Auth0TokenException("Authentication Error");
 
-    private JWTVerifier jwtVerifier = null;
-    private String clientSecret = null;
-    private String clientId = null;
-    private String securedRoute = null;
-    private final Log logger = LogFactory.getLog(getClass());
+    private JWTVerifier jwtVerifier;
+    private String domain;
+    private String issuer;
+    private String clientId;
+    private String clientSecret;
+    private String securedRoute;
+    private boolean base64EncodedSecret;
+    private Auth0AuthorityStrategy authorityStrategy;
 
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         try {
@@ -51,7 +56,7 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
             final HttpServletRequest req = servletReqAttr.getRequest();
             final Auth0User auth0User = SessionUtils.getAuth0User(req);
             Validate.notNull(auth0User);
-            tokenAuth.setPrincipal(new Auth0UserDetails(auth0User));
+            tokenAuth.setPrincipal(new Auth0UserDetails(auth0User, authorityStrategy));
             tokenAuth.setDetails(decoded);
             return authentication;
         } catch (InvalidKeyException e) {
@@ -87,30 +92,36 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
 
     public void afterPropertiesSet() throws Exception {
         if ((clientSecret == null) || (clientId == null)) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "client secret and client id are not set for Auth0AuthenticationProvider");
         }
         if (securedRoute == null) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "You must set which route pattern is used to check for users so that they must be authenticated");
         }
-        jwtVerifier = new JWTVerifier(new Base64(true).decodeBase64(clientSecret), clientId);
+        // Auth0 Client Secrets are currently Base64 encoded,
+        // Auth0 Resource Server Signing Secrets are not Base64 encoded
+        if (base64EncodedSecret) {
+            jwtVerifier = new JWTVerifier(new Base64(true).decodeBase64(clientSecret), clientId, issuer);
+        } else {
+            jwtVerifier = new JWTVerifier(clientSecret, clientId, issuer);
+        }
     }
 
-    public String getSecuredRoute() {
-        return securedRoute;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setSecuredRoute(String securedRoute) {
-        this.securedRoute = securedRoute;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
-    public String getClientSecret() {
-        return clientSecret;
+    public String getIssuer() {
+        return issuer;
     }
 
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
     }
 
     public String getClientId() {
@@ -121,4 +132,35 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
         this.clientId = clientId;
     }
 
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public String getSecuredRoute() {
+        return securedRoute;
+    }
+
+    public void setSecuredRoute(String securedRoute) {
+        this.securedRoute = securedRoute;
+    }
+
+    public boolean isBase64EncodedSecret() {
+        return base64EncodedSecret;
+    }
+
+    public void setBase64EncodedSecret(boolean base64EncodedSecret) {
+        this.base64EncodedSecret = base64EncodedSecret;
+    }
+
+    public Auth0AuthorityStrategy getAuthorityStrategy() {
+        return authorityStrategy;
+    }
+
+    public void setAuthorityStrategy(Auth0AuthorityStrategy authorityStrategy) {
+        this.authorityStrategy = authorityStrategy;
+    }
 }

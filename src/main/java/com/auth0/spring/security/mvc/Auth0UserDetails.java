@@ -8,10 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of Spring Security UserDetails Object
@@ -34,7 +31,7 @@ public class Auth0UserDetails implements UserDetails {
     private List<UserIdentity> identities;
     private ArrayList<GrantedAuthority> authorities;
 
-    public Auth0UserDetails(final Auth0User auth0User) {
+    public Auth0UserDetails(final Auth0User auth0User, final Auth0AuthorityStrategy authorityStrategy) {
         this.userId = auth0User.getUserId();
         if (auth0User.getEmail() != null) {
             this.username = auth0User.getEmail();
@@ -52,43 +49,43 @@ public class Auth0UserDetails implements UserDetails {
         this.picture = auth0User.getPicture();
         this.identities = auth0User.getIdentities();
         this.extraInfo = auth0User.getExtraInfo();
-        setupAuthorities(auth0User);
+//        setupAuthorities(auth0User);
+
+        setupGrantedAuthorities(auth0User, authorityStrategy);
     }
 
-    /**
-     *  @TODO - Configure the application to know the GrantedAuthority strategy.
-     * For now, Roles takes Precedence then Groups...
-     *
-     * @param auth0User
-     */
-    private void setupAuthorities(Auth0User auth0User) {
-        this.authorities = new ArrayList<>();
 
-        if (auth0User.getRoles() != null) {
-            logger.debug("Attempting to map Roles");
-            try {
-                for (final String role : auth0User.getRoles()) {
-                    this.authorities.add(new SimpleGrantedAuthority(role));
+    /**
+     * Currently support Groups and Roles only...
+     */
+    private void setupGrantedAuthorities(final Auth0User auth0User, final Auth0AuthorityStrategy authorityStrategy) {
+        this.authorities = new ArrayList<>();
+        if (Auth0AuthorityStrategy.ROLES.equals(authorityStrategy)) {
+            if (auth0User.getRoles() != null) {
+                logger.debug("Attempting to map Roles");
+                try {
+                    for (final String role : auth0User.getRoles()) {
+                        this.authorities.add(new SimpleGrantedAuthority(role));
+                    }
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                    logger.error("Error setting up GrantedAuthority using Roles");
                 }
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                logger.error("Error setting up GrantedAuthority using Roles");
             }
-        } else if (auth0User.getGroups() != null) {
-            logger.debug("Attempting to map Groups");
-            try {
-                for (final String group : auth0User.getGroups()) {
-                    this.authorities.add(new SimpleGrantedAuthority(group));
+        } else if (Auth0AuthorityStrategy.GROUPS.equals(authorityStrategy)) {
+            if (auth0User.getGroups() != null) {
+                logger.debug("Attempting to map Groups");
+                try {
+                    for (final String group : auth0User.getGroups()) {
+                        this.authorities.add(new SimpleGrantedAuthority(group));
+                    }
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                    logger.error("Error setting up GrantedAuthority using Groups");
                 }
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                logger.error("Error setting up GrantedAuthority using Roles");
             }
-        }
-        // DEFAULT in event nothing has been mapped..
-        if (this.authorities.isEmpty()) {
-            logger.info("Found no Roles or Groups information in UserProfile");
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        } else if (Auth0AuthorityStrategy.SCOPE.equals(authorityStrategy)) {
+            throw new IllegalStateException("SCOPE authority strategy currently not supported for MVC apps");
         }
     }
 
