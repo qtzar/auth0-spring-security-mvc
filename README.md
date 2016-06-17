@@ -45,75 +45,39 @@ compile 'com.auth0:auth0-spring-security-mvc:0.0.2'
 
 ## Learn how to use it
 
-Right now, the best way to learn how to use this library is to study the [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
-and the README for that sample. Our official documentation shall at the link below shall be fully updated shortly, together with Maven publication of the latest release. For
-dev testing, just install locally with maven to get started right away.
+Perhaps the best way to learn how to use this library is to study the [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
+and the README for that sample. Information on configuration and extension points is also provided in this README document below together with a link
+to our tutorial on using this library.
 
 In addition to this sample for Auth0 and Spring Security integration, if you are additionally interested in
 having Single Sign-On (SSO) between Java Spring Security configured applications, then please take a look
 at our [auth0-spring-security-mvc-sso-sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sso-sample)
 
 
-[Please read this tutorial](https://docs.auth0.com/server-apis/java-spring-security-mvc) to learn how to use this SDK.
+[Please read this tutorial](https://auth0.com/docs/quickstart/webapp/java-spring-security-mvc/) to learn how to use this SDK.
 
 ---
 
 ## Default Configuration
 
-### Auth0Configuration
-
-This holds the default Spring configuration for the library.
-
-```
-@Configuration
-@EnableWebSecurity(debug = true)
-@ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
-```
-
-Note the above. This is meant as a light-weight configuration ok for the simplest of applications,
-but it is expected that most usages of this library will involve copying this default configuration
-and creating an application specific version instead. In this case, just drop the following into
-one of your .properties files:
-
-`auth0.defaultAuth0WebSecurityEnabled: false`
-
-This disables the default configuration. The section you'll most likely wish to customize is:
-
-```
- @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // Disable CSRF for JWT usage
-        http
-                .csrf().disable()
-                .addFilterAfter(auth0AuthenticationFilter(auth0AuthenticationEntryPoint()), SecurityContextPersistenceFilter.class)
-                .addFilterBefore(simpleCORSFilter(), Auth0AuthenticationFilter.class)
-                .antMatcher("/**")
-                .authorizeRequests()
-                .antMatchers(securedRoute).authenticated();
-
-        // Auth0 library will will control session management explicitly - not spring security
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
-    }
- ```
-
-The above does very little other than secure the endpoint pattern provided in your configuration (.properties) for `securedRoute`.
-NOTE: we also set the `sessionManagement` policy to NEVER as we wish to control this via our application (using the Auth0 library).
-
 Here is a listing of each of the configuration options and their meaing. If you are writing your Client application
 using `Spring Boot` for example, this is as simple as dropping the following file (`auth0.properties`) into the `src/main/resources`
 directory alongside `application.properties`.
 
-Here is an example:
+Here is an example of a populated `auth0.properties` file:
 
 ```
-auth0.domain: {DOMAIN}
-auth0.clientId: {CLIENT_ID}
-auth0.clientSecret: {CLIENT_SECRET}
+auth0.domain:arcseldon.auth0.com
+auth0.issuer: https://arcseldon.auth0.com/
+auth0.clientId: eTQbNn3qxypLq2Lc1qQEThYL6R7M7MDh
+auth0.clientSecret: Z3xxxxxxCB6ZMaJLOcoS94xxxxbyzGWlTvwR44fkxxxxxMCbiVtgBFFA
 auth0.onLogoutRedirectTo: /login
 auth0.securedRoute: /portal/*
 auth0.loginCallback: /callback
 auth0.loginRedirectOnSuccess: /portal/home
 auth0.loginRedirectOnFail: /login
+auth0.base64EncodedSecret: true
+auth0.authorityStrategy: ROLES
 auth0.servletFilterEnabled: false
 auth0.defaultAuth0WebSecurityEnabled: false
 ```
@@ -122,7 +86,10 @@ Please take a look at the sample that accompanies this library for an easy seed 
 
 Here is a breakdown of what each attribute means:
 
+
 `auth0.domain` - This is your auth0 domain (tenant you have created when registering with auth0 - account name)
+
+`auth0.issuer` - This is the issuer of the JWT Token (typically full URL of your auth0 tenant account - eg. https://{tenant_name}.auth0.com/)
 
 `auth0.clientId` - This is the client id of your auth0 application (see Settings page on auth0 dashboard)
 
@@ -138,9 +105,13 @@ Here is a breakdown of what each attribute means:
 
 `auth0.loginRedirectOnFail` - This is the URL context path for the page to redirect to upon failure. Should start with `/`
 
-`auth0.servletFilterEnabled` - This is a boolean value that switches having an authentication filter enabled On / Off.
+`auth0.base64EncodedSecret` - This is a boolean value indicating whether the Secret used to verify the JWT is base64 encoded. Default is `true`
 
-`auth0.defaultAuth0WebSecurityEnabled` - This is a boolean value that switches having the default config enabled On / Off.
+`auth0.authorityStrategy` - This indicates whether authorization `claims` against the Principal shall be `GROUPS`, `ROLES` or `SCOPE` based. Default is `ROLES`
+
+`auth0.servletFilterEnabled` - This is a boolean value that switches having an authentication filter enabled. Should be `false`
+
+`auth0.defaultAuth0WebSecurityEnabled` - This is a boolean value that switches having the default config enabled. Should be `false`
 
 
 ## Extension Points in Library
@@ -156,7 +127,8 @@ This will exclude injection of the Auth0Filter when parsing the Java Spring cont
 Designed to be very flexible, you can choose between composition and inheritance to declare a Controller that delegates
 to this CallbackHandler - expects to receive an authorization code - using OIDC / Oauth2 Authorization Code Grant Flow.
 Using inheritance offers full opportunities to override specific methods and use alternate implementations override specific
-methods and use alternate implementations.
+methods and use alternate implementations. Special Note: the base CallbackHandler, ` com.auth0.web.Auth0CallbackHandler` is
+actually part of an Auth0 dependency library - see  [https://github.com/auth0/auth0-spring-mvc](https://github.com/auth0/auth0-spring-mvc)
 
 ##### Example usages
 
@@ -185,6 +157,84 @@ import java.io.IOException;
      }
  }
 ```
+
+### Extending Auth0SecurityConfig
+
+Contained in this library is a security configuration class (using Spring Java Configuration Annotations) called `Auth0SecurityConfig`.
+It handles all the library Application Context wiring configuration, and a default `HttpSecurity` endpoint configuration that by default
+simply secures the URL Context path defined with `auth0.securedRoute` property (see properties configuration instructions above).
+
+This is defined in a method called `authorizeRequests(final HttpSecurity http)` - which is intentionally meant for being overridden.
+In almost all cases, it is expected that Client Applications using this library will do so.
+
+```
+/**
+     * Lightweight default configuration that offers basic authorization checks for authenticated
+     * users on secured endpoint, and sets up a Principal user object with granted authorities
+     * <p>
+     * For simple apps, this is sufficient, however for applications wishing to specify fine-grained
+     * endpoint access restrictions, use Role / Group level endpoint authorization etc, then this configuration
+     * should be disabled and a copy, augmented with your own requirements provided. See Sample app for example
+     *
+     * Override this function in subclass to apply custom authentication / authorization
+     * strategies to your application endpoints
+     */
+    protected void authorizeRequests(final HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers(securedRoute).authenticated()
+                .antMatchers("/**").permitAll();
+    }
+ ```
+
+For example, from the Sample application here is the declared subclass together with overridden method:
+
+```
+package com.auth0.example;
+
+import com.auth0.spring.security.mvc.Auth0SecurityConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+
+@Configuration
+@EnableWebSecurity(debug = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+public class AppConfig extends Auth0SecurityConfig {
+
+    @Value(value = "${auth0.customLogin}")
+    protected boolean customLogin;
+
+    @Value(value = "${auth0.connection}")
+    protected String connection;
+
+
+    @Override
+    protected void authorizeRequests(final HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/css/**", "/fonts/**", "/js/**", "/login").permitAll()
+                .antMatchers("/portal/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .antMatchers(securedRoute).authenticated();
+    }
+
+    public boolean isCustomLogin() {
+        return customLogin;
+    }
+
+    public String getConnection() {
+        return connection;
+    }
+
+}
+```
+
+By subclassing, and overriding `authorizeRequests` as above, you are free to define whatever endpoint security configuration (authentication and
+authorization) suitable for your own needs.
 
 
 ## What is Auth0?
