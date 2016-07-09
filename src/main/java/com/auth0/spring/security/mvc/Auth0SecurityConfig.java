@@ -15,11 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.web.context.request.RequestContextListener;
 
 /**
- *  Auth0 Security Config that wires together dependencies required
- *
- *  Applications are expected to extend this Config
+ * Auth0 Security Config that wires together dependencies required
+ * <p>
+ * Applications are expected to extend this Config
  */
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -94,11 +95,8 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * We do this to ensure our Filter is only loaded once into Application Context
-     *
+     * <p>
      * If using Spring Boot, any GenericFilterBean in the context will be automatically added to the filter chain.
-     * Since we want to support Servlet 2.x and 3.x we should not extend OncePerRequestFilter therefore instead
-     * we explicitly define FilterRegistrationBean and disable.
-     *
      */
     @Bean(name = "auth0AuthenticationFilterRegistration")
     public FilterRegistrationBean auth0AuthenticationFilterRegistration(final Auth0AuthenticationFilter filter) {
@@ -106,6 +104,11 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
         filterRegistrationBean.setFilter(filter);
         filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
+    }
+
+    @Bean
+    public RequestContextListener requestContextListener() {
+        return new RequestContextListener();
     }
 
     @Override
@@ -142,7 +145,7 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
      * For simple apps, this is sufficient, however for applications wishing to specify fine-grained
      * endpoint access restrictions, use Role / Group level endpoint authorization etc, then this configuration
      * should be disabled and a copy, augmented with your own requirements provided. See Sample app for example
-     *
+     * <p>
      * Override this function in subclass to apply custom authentication / authorization
      * strategies to your application endpoints
      */

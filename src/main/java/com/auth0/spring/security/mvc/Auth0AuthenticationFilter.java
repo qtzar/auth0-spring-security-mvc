@@ -1,6 +1,5 @@
 package com.auth0.spring.security.mvc;
 
-import com.auth0.authentication.result.Credentials;
 import com.auth0.web.SessionUtils;
 import com.auth0.web.Tokens;
 import org.springframework.beans.factory.annotation.Autowired;
