@@ -1,5 +1,9 @@
 package com.auth0.spring.security.mvc;
 
+import com.auth0.jwt.Algorithm;
+import com.auth0.jwt.JWTVerifier;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,6 +20,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.context.request.RequestContextListener;
+
+import javax.servlet.ServletContext;
+import java.security.PublicKey;
 
 /**
  * Auth0 Security Config that wires together dependencies required
@@ -48,6 +55,18 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value(value = "${auth0.base64EncodedSecret}")
     protected boolean base64EncodedSecret;
 
+    /**
+     * default to HS256 for backwards compatibility
+     */
+    @Value(value = "${auth0.signingAlgorithm:HS256}")
+    protected String signingAlgorithm;
+
+    /**
+     * default to empty string as HS256 is default
+     */
+    @Value(value = "${auth0.publicKeyPath:}")
+    protected String publicKeyPath;
+
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Bean(name = "auth0AuthenticationManager")
@@ -78,6 +97,8 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationProvider.setSecuredRoute(securedRoute);
         authenticationProvider.setAuthorityStrategy(authorityStrategy);
         authenticationProvider.setBase64EncodedSecret(base64EncodedSecret);
+        authenticationProvider.setSigningAlgorithm(Algorithm.valueOf(this.signingAlgorithm));
+        authenticationProvider.setPublicKeyPath(this.publicKeyPath);
         return authenticationProvider;
     }
 
