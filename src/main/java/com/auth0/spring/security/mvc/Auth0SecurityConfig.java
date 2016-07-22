@@ -30,7 +30,7 @@ import java.security.PublicKey;
  * Applications are expected to extend this Config
  */
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
 public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
 
