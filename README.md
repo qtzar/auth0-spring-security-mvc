@@ -58,12 +58,14 @@ In the literature you might find this flow referred to as Authorization Code Gra
 [Please read this tutorial](https://auth0.com/docs/quickstart/webapp/java-spring-security-mvc/) to learn how to use this SDK.
 
 Perhaps the best way to learn how to use this library is to study the [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
-and the README for that sample. Information on configuration and extension points is also provided in this README document below together with a link
-to our tutorial on using this library.
+and the README for that sample. 
 
-In addition to this sample for Auth0 and Spring Security integration, if you are additionally interested in
+Information on configuration and extension points is provided below. 
+
+In addition to this sample for Auth0 and Spring Security integration, if you are interested in
 having Single Sign-On (SSO) between Java Spring Security configured applications, then please take a look
 at our [auth0-spring-security-mvc-sso-sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sso-sample)
+which also depends on this library.
 
 ----
 
