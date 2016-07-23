@@ -33,17 +33,29 @@ Get Auth0 Spring Security MVC via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>auth0-spring-security-mvc</artifactId>
-  <version>0.0.2</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-compile 'com.auth0:auth0-spring-security-mvc:0.0.2'
+compile 'com.auth0:auth0-spring-security-mvc:0.1.0'
 ```
 
+## The Oauth Server Side Protocol
+
+This library is expected to be used in order to successfully implement the [Oauth Server Side](https://auth0.com/docs/protocols#oauth-server-side) protocol. 
+This protocol is best suited for websites that need:
+  
+  * Authenticated Users
+  * Access to 3rd party APIs on behalf of the logged in user
+  
+In the literature you might find this flow referred to as Authorization Code Grant. The full spec of this flow is [here.](https://tools.ietf.org/html/rfc6749#section-4.1)
+
 ## Learn how to use it
+
+[Please read this tutorial](https://auth0.com/docs/quickstart/webapp/java-spring-security-mvc/) to learn how to use this SDK.
 
 Perhaps the best way to learn how to use this library is to study the [Auth0 Spring Security MVC Sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sample)
 and the README for that sample. Information on configuration and extension points is also provided in this README document below together with a link
@@ -53,10 +65,7 @@ In addition to this sample for Auth0 and Spring Security integration, if you are
 having Single Sign-On (SSO) between Java Spring Security configured applications, then please take a look
 at our [auth0-spring-security-mvc-sso-sample](https://github.com/auth0-samples/auth0-spring-security-mvc-sso-sample)
 
-
-[Please read this tutorial](https://auth0.com/docs/quickstart/webapp/java-spring-security-mvc/) to learn how to use this SDK.
-
----
+----
 
 ## Default Configuration
 
@@ -80,6 +89,8 @@ auth0.base64EncodedSecret: true
 auth0.authorityStrategy: ROLES
 auth0.servletFilterEnabled: false
 auth0.defaultAuth0WebSecurityEnabled: false
+auth0.signing_algorithm: HS256
+auth0.public_key_path:
 ```
 
 Please take a look at the sample that accompanies this library for an easy seed project to see this working.
@@ -129,8 +140,6 @@ The following two attributes are required when configuring your application with
 `auth0.signing_algorithm` - This is signing algorithm to verify signed JWT token. Use `HS256` or `RS256`. 
 
 `auth0.public_key_path` - This is the path location to the public key stored locally on disk / inside your application War file WEB-INF directory. Should always be set when using `RS256`. 
-
-
 
 ## Extension Points in Library
 
