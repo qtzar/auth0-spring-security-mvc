@@ -91,8 +91,8 @@ auth0.base64EncodedSecret: true
 auth0.authorityStrategy: ROLES
 auth0.servletFilterEnabled: false
 auth0.defaultAuth0WebSecurityEnabled: false
-auth0.signing_algorithm: HS256
-auth0.public_key_path:
+auth0.signingAlgorithm: HS256
+auth0.publicKeyPath:
 ```
 
 Please take a look at the sample that accompanies this library for an easy seed project to see this working.
@@ -139,9 +139,9 @@ You can download the application's public key from the Auth0 Dashboard and store
 
 The following two attributes are required when configuring your application with this library to use `RSA` instead of `HMAC`:
 
-`auth0.signing_algorithm` - This is signing algorithm to verify signed JWT token. Use `HS256` or `RS256`. 
+`auth0.signingAlgorithm` - This is signing algorithm to verify signed JWT token. Use `HS256` or `RS256`. 
 
-`auth0.public_key_path` - This is the path location to the public key stored locally on disk / inside your application War file WEB-INF directory. Should always be set when using `RS256`. 
+`auth0.publicKeyPath` - This is the path location to the public key stored locally on disk / inside your application War file WEB-INF directory. Should always be set when using `RS256`. 
 
 ## Extension Points in Library
 
