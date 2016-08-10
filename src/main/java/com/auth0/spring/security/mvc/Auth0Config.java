@@ -1,12 +1,9 @@
 package com.auth0.spring.security.mvc;
 
+import com.auth0.Auth0AuthorityStrategy;
 import com.auth0.jwt.Algorithm;
-import com.auth0.jwt.JWTVerifier;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.context.request.RequestContextListener;
 
-import javax.servlet.ServletContext;
-import java.security.PublicKey;
-
 /**
  * Auth0 Security Config that wires together dependencies required
  * <p>
@@ -31,8 +25,7 @@ import java.security.PublicKey;
  */
 @Configuration
 @EnableWebSecurity
-@ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
-public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
+public class Auth0Config extends WebSecurityConfigurerAdapter {
 
     @Value(value = "${auth0.domain}")
     protected String domain;
@@ -45,6 +38,18 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value(value = "${auth0.clientSecret}")
     protected String clientSecret;
+
+    @Value(value = "${auth0.onLogoutRedirectTo}")
+    protected String onLogoutRedirectTo;
+
+    @Value(value = "${auth0.loginRedirectOnSuccess}")
+    protected String loginRedirectOnSuccess;
+
+    @Value(value = "${auth0.loginRedirectOnFail}")
+    protected String loginRedirectOnFail;
+
+    @Value(value = "${auth0.loginCallback}")
+    protected String loginCallback;
 
     @Value(value = "${auth0.securedRoute}")
     protected String securedRoute;
@@ -176,4 +181,56 @@ public class Auth0SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll();
     }
 
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public String getLoginRedirectOnSuccess() {
+        return loginRedirectOnSuccess;
+    }
+
+    public String getLoginRedirectOnFail() {
+        return loginRedirectOnFail;
+    }
+
+    public String getOnLogoutRedirectTo() {
+        return onLogoutRedirectTo;
+    }
+
+    public String getLoginCallback() {
+        return loginCallback;
+    }
+
+    public String getSecuredRoute() {
+        return securedRoute;
+    }
+
+    public String getAuthorityStrategy() {
+        return authorityStrategy;
+    }
+
+    public boolean isBase64EncodedSecret() {
+        return base64EncodedSecret;
+    }
+
+    public String getSigningAlgorithm() {
+        return signingAlgorithm;
+    }
+
+    public String getPublicKeyPath() {
+        return publicKeyPath;
+    }
 }

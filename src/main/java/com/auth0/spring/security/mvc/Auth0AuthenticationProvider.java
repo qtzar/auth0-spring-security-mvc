@@ -1,14 +1,13 @@
 package com.auth0.spring.security.mvc;
 
+import com.auth0.Auth0AuthorityStrategy;
+import com.auth0.Auth0User;
+import com.auth0.SessionUtils;
 import com.auth0.jwt.Algorithm;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
-import com.auth0.web.Auth0User;
-import com.auth0.web.SessionUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,10 +34,6 @@ import static com.auth0.jwt.pem.PemReader.readPublicKey;
 public class Auth0AuthenticationProvider implements AuthenticationProvider,
         InitializingBean {
 
-    private final static Log logger = LogFactory.getLog(Auth0AuthenticationProvider.class);
-
-    private static final AuthenticationException AUTH_ERROR = new Auth0TokenException("Authentication Error");
-
     @Autowired
     ServletContext servletContext;
 
@@ -56,12 +51,9 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         try {
             final String token = ((Auth0JWTToken) authentication).getJwt();
-            logger.info("Trying to authenticate with token: " + token);
             final Auth0JWTToken tokenAuth = ((Auth0JWTToken) authentication);
             final Map<String, Object> decoded = jwtVerifier.verify(token);
-            logger.debug("Decoded JWT token" + decoded);
             tokenAuth.setAuthenticated(true);
-            // Retrieve our Auth0User object from session
             final ServletRequestAttributes servletReqAttr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpServletRequest req = servletReqAttr.getRequest();
             final Auth0User auth0User = SessionUtils.getAuth0User(req);
@@ -70,29 +62,17 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
             tokenAuth.setDetails(decoded);
             return authentication;
         } catch (InvalidKeyException e) {
-            logger.debug("InvalidKeyException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("InvalidKeyException thrown while decoding JWT token " + e.getLocalizedMessage());
         } catch (NoSuchAlgorithmException e) {
-            logger.debug("NoSuchAlgorithmException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("NoSuchAlgorithmException thrown while decoding JWT token " + e.getLocalizedMessage());
         } catch (IllegalStateException e) {
-            logger.debug("IllegalStateException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("IllegalStateException thrown while decoding JWT token " + e.getLocalizedMessage());
         } catch (SignatureException e) {
-            logger.debug("SignatureException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("SignatureException thrown while decoding JWT token " + e.getLocalizedMessage());
         } catch (IOException e) {
-            logger.debug("IOException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("IOException thrown while decoding JWT token " + e.getLocalizedMessage());
         } catch (JWTVerifyException e) {
-            logger.debug("JWTVerifyException thrown while decoding JWT token "
-                    + e.getLocalizedMessage());
-            throw AUTH_ERROR;
+            throw new Auth0TokenException("JWTVerifyException thrown while decoding JWT token " + e.getLocalizedMessage());
         }
     }
 

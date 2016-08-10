@@ -1,9 +1,8 @@
 package com.auth0.spring.security.mvc;
 
+import com.auth0.Auth0AuthorityStrategy;
+import com.auth0.Auth0User;
 import com.auth0.authentication.result.UserIdentity;
-import com.auth0.web.Auth0User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +16,6 @@ import java.util.*;
 public class Auth0UserDetails implements UserDetails {
 
     private static final long serialVersionUID = 2058797193125711681L;
-
-    private static final Logger logger = LoggerFactory.getLogger(Auth0UserDetails.class);
 
     private String userId;
     private String username;
@@ -49,8 +46,6 @@ public class Auth0UserDetails implements UserDetails {
         this.picture = auth0User.getPicture();
         this.identities = auth0User.getIdentities();
         this.extraInfo = auth0User.getExtraInfo();
-//        setupAuthorities(auth0User);
-
         setupGrantedAuthorities(auth0User, authorityStrategy);
     }
 
@@ -62,30 +57,26 @@ public class Auth0UserDetails implements UserDetails {
         this.authorities = new ArrayList<>();
         if (Auth0AuthorityStrategy.ROLES.equals(authorityStrategy)) {
             if (auth0User.getRoles() != null) {
-                logger.debug("Attempting to map Roles");
                 try {
                     for (final String role : auth0User.getRoles()) {
                         this.authorities.add(new SimpleGrantedAuthority(role));
                     }
                 } catch (ClassCastException e) {
                     e.printStackTrace();
-                    logger.error("Error setting up GrantedAuthority using Roles");
                 }
             }
         } else if (Auth0AuthorityStrategy.GROUPS.equals(authorityStrategy)) {
             if (auth0User.getGroups() != null) {
-                logger.debug("Attempting to map Groups");
                 try {
                     for (final String group : auth0User.getGroups()) {
                         this.authorities.add(new SimpleGrantedAuthority(group));
                     }
                 } catch (ClassCastException e) {
                     e.printStackTrace();
-                    logger.error("Error setting up GrantedAuthority using Groups");
                 }
             }
         } else if (Auth0AuthorityStrategy.SCOPE.equals(authorityStrategy)) {
-            throw new IllegalStateException("SCOPE authority strategy currently not supported for MVC apps");
+            throw new IllegalStateException("SCOPE authority strategy not supported for MVC apps");
         }
     }
 
@@ -143,7 +134,6 @@ public class Auth0UserDetails implements UserDetails {
      */
     @Override
     public boolean isAccountNonExpired() {
-        // @TODO - review this
         return false;
     }
 
@@ -155,7 +145,6 @@ public class Auth0UserDetails implements UserDetails {
      */
     @Override
     public boolean isAccountNonLocked() {
-        // @TODO - review this
         return false;
     }
 
@@ -168,14 +157,13 @@ public class Auth0UserDetails implements UserDetails {
      */
     @Override
     public boolean isCredentialsNonExpired() {
-        // @TODO - review this
         return false;
     }
 
     /**
      * Will return true if the email is verified, otherwise it will return false
      */
-   @Override
+    @Override
     public boolean isEnabled() {
         return emailVerified;
     }

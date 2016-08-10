@@ -1,9 +1,9 @@
 package com.auth0.spring.security.mvc;
 
-import java.util.Collection;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 /**
  * Implements the org.springframework.security.core.Authentication interface.
