@@ -33,14 +33,14 @@ Get Auth0 Spring Security MVC via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>auth0-spring-security-mvc</artifactId>
-  <version>0.2.0</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-compile 'com.auth0:auth0-spring-security-mvc:0.2.0'
+compile 'com.auth0:auth0-spring-security-mvc:1.0.0'
 ```
 
 ## The Oauth Server Side Protocol
@@ -69,13 +69,18 @@ which also depends on this library.
 
 ----
 
-## Default Configuration
+## Auth0Config
 
-Here is a listing of each of the configuration options and their meaing. If you are writing your Client application
-using `Spring Boot` for example, this is as simple as dropping the following file (`auth0.properties`) into the `src/main/resources`
-directory alongside `application.properties`.
+This holds the default Spring configuration for the library.
 
-Here is an example of a populated `auth0.properties` file:
+Note the above. The expectation is that this library will receive the following properties. 
+
+Please see the samples project for this library for an example where an `auth0.properties` is placed on the classpath.
+Using `Spring Boot` for example, this is as simple as dropping
+such a properties file into the `src/main/resources` directory alongside `application.properties` (or just updating 
+`application.properties` itself).
+
+Here is an example:
 
 ```
 auth0.domain:arcseldon.auth0.com
@@ -95,7 +100,7 @@ auth0.signingAlgorithm: HS256
 auth0.publicKeyPath:
 ```
 
-Please take a look at the sample that accompanies this library for an easy seed project to see this working.
+Again, please take a look at the sample that accompanies this library for an easy seed project to see this working.
 
 Here is a breakdown of what each attribute means:
 
@@ -145,51 +150,9 @@ The following two attributes are required when configuring your application with
 
 ## Extension Points in Library
 
-Most of the library can be extended, overridden or altered according to need. Bear in mind also that this library can
-be leveraged as a dependency by other libraries for features such as the Auth0CallbackHandler, NonceGenerator and SessionUtils.
-But perhaps the library depending on this library has its own Security Filter solution. Because we are using Spring Security and may
-wish to `deactivate` the Auth0Filter then simply set the properties entry for `auth0.servletFilterEnabled` to `false`.
-This will exclude injection of the Auth0Filter when parsing the Java Spring context class.
 
-### Auth0CallbackHandler
+### Extending Auth0Config
 
-Designed to be very flexible, you can choose between composition and inheritance to declare a Controller that delegates
-to this CallbackHandler - expects to receive an authorization code - using OIDC / Oauth2 Authorization Code Grant Flow.
-Using inheritance offers full opportunities to override specific methods and use alternate implementations override specific
-methods and use alternate implementations. Special Note: the base CallbackHandler, ` com.auth0.web.Auth0CallbackHandler` is
-actually part of an Auth0 dependency library - see  [https://github.com/auth0/auth0-spring-mvc](https://github.com/auth0/auth0-spring-mvc)
-
-##### Example usages
-
-Example usage - Simply extend this class and define Controller in subclass
-
-```
-package com.auth0.example;
-
-import com.auth0.web.Auth0CallbackHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
- @Controller
- public class CallbackController extends Auth0CallbackHandler {
-
-     @RequestMapping(value = "${auth0.loginCallback}", method = RequestMethod.GET)
-     protected void callback(final HttpServletRequest req, final HttpServletResponse res)
-                                                     throws ServletException, IOException {
-         super.handle(req, res);
-     }
- }
-```
-
-### Extending Auth0SecurityConfig
-
-Contained in this library is a security configuration class (using Spring Java Configuration Annotations) called `Auth0SecurityConfig`.
 It handles all the library Application Context wiring configuration, and a default `HttpSecurity` endpoint configuration that by default
 simply secures the URL Context path defined with `auth0.securedRoute` property (see properties configuration instructions above).
 
@@ -249,6 +212,97 @@ public class AppConfig extends Auth0SecurityConfig {
 
 By subclassing, and overriding `authorizeRequests` as above, you are free to define whatever endpoint security configuration (authentication and
 authorization) suitable for your own needs.
+
+
+### Auth0CallbackHandler
+
+Designed to be very flexible, you can choose between composition and inheritance to declare a Controller that delegates
+to this CallbackHandler - expects to receive an authorization code - using OIDC / Oauth2 Authorization Code Grant Flow.
+Using inheritance offers full opportunities to override specific methods and use alternate implementations override specific
+methods and use alternate implementations.
+
+##### Example usages
+
+Example usage - Simply extend this class and define Controller in subclass
+
+```
+package com.auth0.example;
+
+import com.auth0.web.Auth0CallbackHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+ @Controller
+ public class CallbackController extends Auth0CallbackHandler {
+
+     @RequestMapping(value = "${auth0.loginCallback}", method = RequestMethod.GET)
+     protected void callback(final HttpServletRequest req, final HttpServletResponse res)
+                                                     throws ServletException, IOException {
+         super.handle(req, res);
+     }
+ }
+```
+
+Example usage - Create a Controller, and use composition, simply pass your action requests on to the handle(req, res) method of this delegate class.
+
+```
+package com.auth0.example;
+
+import Auth0CallbackHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Controller
+public class CallbackController {
+
+   @Autowired
+   protected Auth0CallbackHandler callback;
+
+   @RequestMapping(value = "${auth0.loginCallback}", method = RequestMethod.GET)
+   protected void callback(final HttpServletRequest req, final HttpServletResponse res)
+                                                   throws ServletException, IOException {
+       callback.handle(req, res);
+   }
+}
+
+```
+
+List of functions available for override:
+
+
+#### protected void onSuccess(HttpServletRequest req, HttpServletResponse resp)
+
+Here you can configure what to do after successful authentication. Uses `auth0.loginRedirectOnSuccess` property
+
+####	protected void onFailure(HttpServletRequest req, HttpServletResponse resp, Exception ex)
+
+Here you can configure what to do after failure authentication. Uses `auth0.loginRedirectOnFail` property
+
+####  protected void store(final Tokens tokens, final Auth0User user, final HttpServletRequest req)
+
+Here you can configure where to store the Tokens and the User. By default, they're stored in the `Session` in the `tokens` and `auth0User` fields
+
+#### protected boolean isValidState(final HttpServletRequest req)
+
+By default, this library expects a Nonce value in the state query param as follows `state=nonce=B4AD596E418F7CE02A703B42F60BAD8F` where `xyz`
+is a randomly generated UUID.
+
+The NonceFactory can be used to generate such a nonce value. State may be needed to hold other attribute values hence why it has its
+own keyed value of `nonce=B4AD596E418F7CE02A703B42F60BAD8F`. For instance in SSO you may need an `externalCallbackUrl` which also needs
+to be stored down in the state param - `state=nonce=B4AD596E418F7CE02A703B42F60BAD8F&externalCallbackUrl=http://localhost:3099/callback`
 
 
 ## What is Auth0?
