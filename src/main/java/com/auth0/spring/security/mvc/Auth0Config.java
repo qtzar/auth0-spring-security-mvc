@@ -5,6 +5,7 @@ import com.auth0.jwt.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.web.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.web.context.request.RequestContextListener;
 
 /**
  * Auth0 Security Config that wires together dependencies required
@@ -133,8 +133,8 @@ public class Auth0Config extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
+    public OrderedRequestContextFilter requestContextFilter() {
+        return new OrderedRequestContextFilter();
     }
 
     @Override
