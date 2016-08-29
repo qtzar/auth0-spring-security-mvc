@@ -4,6 +4,7 @@ import com.auth0.Auth0AuthorityStrategy;
 import com.auth0.jwt.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.web.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
  */
 @Configuration
 @EnableWebSecurity
+@ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
 public class Auth0Config extends WebSecurityConfigurerAdapter {
 
     @Value(value = "${auth0.domain}")
