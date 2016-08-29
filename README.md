@@ -159,7 +159,7 @@ simply secures the URL Context path defined with `auth0.securedRoute` property (
 This is defined in a method called `authorizeRequests(final HttpSecurity http)` - which is intentionally meant for being overridden.
 In almost all cases, it is expected that Client Applications using this library will do so.
 
-```
+```java
 /**
      * Lightweight default configuration that offers basic authorization checks for authenticated
      * users on secured endpoint, and sets up a Principal user object with granted authorities
@@ -225,7 +225,7 @@ methods and use alternate implementations.
 
 Example usage - Simply extend this class and define Controller in subclass
 
-```
+```java
 package com.auth0.example;
 
 import com.auth0.web.Auth0CallbackHandler;
@@ -251,7 +251,7 @@ import java.io.IOException;
 
 Example usage - Create a Controller, and use composition, simply pass your action requests on to the handle(req, res) method of this delegate class.
 
-```
+```java
 package com.auth0.example;
 
 import Auth0CallbackHandler;
@@ -297,12 +297,12 @@ Here you can configure where to store the Tokens and the User. By default, they'
 
 #### protected boolean isValidState(final HttpServletRequest req)
 
-By default, this library expects a Nonce value in the state query param as follows `state=nonce=B4AD596E418F7CE02A703B42F60BAD8F` where `xyz`
-is a randomly generated UUID.
+By default, this library expects a Nonce value in the state query param as follows `state=nonce={NONCE}` where `{NONCE}`
+is a randomly generated UUID like `B4AD596E418F7CE02A703B42F60BAD8F`.
 
-The NonceFactory can be used to generate such a nonce value. State may be needed to hold other attribute values hence why it has its
-own keyed value of `nonce=B4AD596E418F7CE02A703B42F60BAD8F`. For instance in SSO you may need an `externalCallbackUrl` which also needs
-to be stored down in the state param - `state=nonce=B4AD596E418F7CE02A703B42F60BAD8F&externalCallbackUrl=http://localhost:3099/callback`
+The `NonceFactory` can be used to generate such a nonce value. State may be needed to hold other attribute values hence why it has its
+own keyed value of `nonce={NONCE}`. For instance in SSO you may need an `externalCallbackUrl` which also needs
+to be stored down in the state param - `state=nonce={NONCE}&externalCallbackUrl=http://localhost:3099/callback`
 
 
 ## What is Auth0?
