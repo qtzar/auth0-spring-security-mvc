@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -50,9 +51,16 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
 
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         try {
-            final String token = ((Auth0JWTToken) authentication).getJwt();
+            // always verify JWT token
             final Auth0JWTToken tokenAuth = ((Auth0JWTToken) authentication);
+            final String token = tokenAuth.getJwt();
             final Map<String, Object> decoded = jwtVerifier.verify(token);
+
+            // check current authentication status of user and avoid re-authentication setup if already authenticated
+            final Authentication existingAuthentication = SecurityContextHolder.getContext().getAuthentication();
+            if (existingAuthentication != null && existingAuthentication.isAuthenticated()) {
+                return existingAuthentication;
+            }
             tokenAuth.setAuthenticated(true);
             final ServletRequestAttributes servletReqAttr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpServletRequest req = servletReqAttr.getRequest();

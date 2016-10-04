@@ -25,6 +25,7 @@ public class Auth0UserDetails implements UserDetails {
     private String nickname;
     private String picture;
     private Map<String, Object> extraInfo;
+    private Map<String, Object> userMetadata;
     private List<UserIdentity> identities;
     private ArrayList<GrantedAuthority> authorities;
 
@@ -46,6 +47,7 @@ public class Auth0UserDetails implements UserDetails {
         this.picture = auth0User.getPicture();
         this.identities = auth0User.getIdentities();
         this.extraInfo = auth0User.getExtraInfo();
+        this.userMetadata = auth0User.getUserMetadata();
         setupGrantedAuthorities(auth0User, authorityStrategy);
     }
 
@@ -100,8 +102,20 @@ public class Auth0UserDetails implements UserDetails {
         return picture;
     }
 
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public Map<String, Object> getExtraInfo() {
+        return Collections.unmodifiableMap(extraInfo);
+    }
+
     public List<UserIdentity> getIdentities() {
-        return identities;
+        return Collections.unmodifiableList(identities);
+    }
+
+    public Map<String, Object> getUserMetadata() {
+        return Collections.unmodifiableMap(userMetadata);
     }
 
     @Override
@@ -110,11 +124,11 @@ public class Auth0UserDetails implements UserDetails {
     }
 
     /**
-     * Will return UnsupportedOperationException
+     * Will always return null
      */
     @Override
     public String getPassword() {
-        throw new UnsupportedOperationException("Password is protected");
+        return null;
     }
 
     /**
@@ -129,35 +143,41 @@ public class Auth0UserDetails implements UserDetails {
      * Indicates whether the user's account has expired. An expired account cannot be
      * authenticated.
      *
+     * This implementation shall return true by default
+     *
      * @return <code>true</code> if the user's account is valid (ie non-expired),
      * <code>false</code> if no longer valid (ie expired)
      */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     /**
      * Indicates whether the user is locked or unlocked. A locked user cannot be
      * authenticated.
      *
+     * This implementation shall return true by default
+     *
      * @return <code>true</code> if the user is not locked, <code>false</code> otherwise
      */
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     /**
      * Indicates whether the user's credentials (password) has expired. Expired
      * credentials prevent authentication.
      *
+     * This implementation shall return true by default
+     *
      * @return <code>true</code> if the user's credentials are valid (ie non-expired),
      * <code>false</code> if no longer valid (ie expired)
      */
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     /**
