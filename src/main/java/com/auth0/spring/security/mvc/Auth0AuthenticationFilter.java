@@ -19,7 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Filter responsible to intercept the JWT in the HTTP header and attempt an authentication. It delegates the authentication to the authentication manager
+ * Filter responsible to intercept the JWT in the HTTP header and attempt an authentication.
+ * It delegates the authentication to the authentication manager
  */
 public class Auth0AuthenticationFilter extends GenericFilterBean {
 
@@ -28,6 +29,12 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
 
     private AuthenticationEntryPoint entryPoint;
 
+    /**
+     * Check for existence of id token and access token
+     *
+     * @param tokens the tokens object
+     * @return boolean whether both id token and access token exist
+     */
     protected boolean tokensExist(final Tokens tokens) {
         if (tokens == null) {
             return false;
@@ -35,7 +42,11 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
         return tokens.getIdToken() != null && tokens.getAccessToken() != null;
     }
 
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    /**
+     * Perform filter check on this request - verify tokens exist and verify
+     * the id token is valid
+     */
+    public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) res;
         if (request.getMethod().equals("OPTIONS")) {
@@ -63,7 +74,7 @@ public class Auth0AuthenticationFilter extends GenericFilterBean {
         return entryPoint;
     }
 
-    public void setEntryPoint(AuthenticationEntryPoint entryPoint) {
+    public void setEntryPoint(final AuthenticationEntryPoint entryPoint) {
         this.entryPoint = entryPoint;
     }
 

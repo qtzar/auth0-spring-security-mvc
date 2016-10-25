@@ -20,56 +20,97 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 /**
- * Auth0 Security Config that wires together dependencies required
- * <p>
- * Applications are expected to extend this Config
+ * Holds the default configuration for the library
+ * Applications are expected to extend this configuration on as-needed basis
+ *
+ * Extend this configuration in your own subclass and override specific functions to apply your own
+ * behaviour as required eg. to apply custom authentication / authorization strategies to your application endpoints
  */
 @Configuration
 @EnableWebSecurity
 @ConditionalOnProperty(prefix = "auth0", name = "defaultAuth0WebSecurityEnabled")
 public class Auth0Config extends WebSecurityConfigurerAdapter {
 
+    /**
+     * This is your auth0 domain (tenant you have created when registering with auth0 - account name)
+     */
     @Value(value = "${auth0.domain}")
     protected String domain;
 
+    /**
+     * This is the issuer of the JWT Token (typically full URL of your auth0 tenant account
+     * eg. https://{tenant_name}.auth0.com/
+     */
     @Value(value = "${auth0.issuer}")
     protected String issuer;
 
+    /**
+     * This is the client id of your auth0 application (see Settings page on auth0 dashboard)
+     */
     @Value(value = "${auth0.clientId}")
     protected String clientId;
 
+    /**
+     * This is the client secret of your auth0 application (see Settings page on auth0 dashboard)
+     */
     @Value(value = "${auth0.clientSecret}")
     protected String clientSecret;
 
+    /**
+     * This is the page / view that users of your site are redirected to on logout. Should start with `/`
+     */
     @Value(value = "${auth0.onLogoutRedirectTo}")
     protected String onLogoutRedirectTo;
 
+    /**
+     * This is the landing page URL context path for a successful authentication. Should start with `/`
+     */
     @Value(value = "${auth0.loginRedirectOnSuccess}")
     protected String loginRedirectOnSuccess;
 
+    /**
+     * This is the URL context path for the page to redirect to upon failure. Should start with `/`
+     */
     @Value(value = "${auth0.loginRedirectOnFail}")
     protected String loginRedirectOnFail;
 
+    /**
+     * This is the URL context path for the login callback endpoint. Should start with `/`
+     */
     @Value(value = "${auth0.loginCallback}")
     protected String loginCallback;
 
+    /**
+     * This is the URL pattern to secure a URL endpoint. Should start with `/`
+     */
     @Value(value = "${auth0.securedRoute}")
     protected String securedRoute;
 
+    /**
+     * The authority strategy being used - can be either ROLES or GROUPS
+     * Custom RULES configurable via dashboard may apply ROLES or GROUPS claim on the ID Token
+     * whose values are the scope values representing the permissions granted.
+     */
     @Value(value = "${auth0.authorityStrategy}")
     protected String authorityStrategy;
 
+    /**
+     * This is a boolean value indicating whether the Secret used to verify the JWT is base64 encoded. Default is `true`
+     */
     @Value(value = "${auth0.base64EncodedSecret}")
     protected boolean base64EncodedSecret;
 
     /**
-     * default to HS256 for backwards compatibility
+     * This is signing algorithm to verify signed JWT token. Use `HS256` or `RS256`.
+     * Default to HS256 for backwards compatibility
      */
     @Value(value = "${auth0.signingAlgorithm:HS256}")
     protected String signingAlgorithm;
 
     /**
-     * default to empty string as HS256 is default
+     * This is the path location to the public key stored locally on disk / inside your application War file WEB-INF directory.
+     * Should always be set when using `RS256`.
+     * Default to empty string as HS256 is default
      */
     @Value(value = "${auth0.publicKeyPath:}")
     protected String publicKeyPath;
@@ -81,11 +122,17 @@ public class Auth0Config extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * Factory for CORSFilter
+     */
     @Bean
     public Auth0CORSFilter simpleCORSFilter() {
         return new Auth0CORSFilter();
     }
 
+    /**
+     * Factory for AuthenticationProvider
+     */
     @Bean(name = "auth0AuthenticationProvider")
     public Auth0AuthenticationProvider auth0AuthenticationProvider() {
         // First check the authority strategy configured for the API
@@ -109,22 +156,26 @@ public class Auth0Config extends WebSecurityConfigurerAdapter {
         return authenticationProvider;
     }
 
+    /**
+     * Factory for Auth0AuthenticationEntryPoint
+     */
     @Bean(name = "auth0EntryPoint")
     public Auth0AuthenticationEntryPoint auth0AuthenticationEntryPoint() {
         return new Auth0AuthenticationEntryPoint();
     }
 
+    /**
+     * Factory for Auth0AuthenticationFilter
+     */
     @Bean(name = "auth0Filter")
-    public Auth0AuthenticationFilter auth0AuthenticationFilter(Auth0AuthenticationEntryPoint entryPoint) {
+    public Auth0AuthenticationFilter auth0AuthenticationFilter(final Auth0AuthenticationEntryPoint entryPoint) {
         final Auth0AuthenticationFilter filter = new Auth0AuthenticationFilter();
         filter.setEntryPoint(entryPoint);
         return filter;
     }
 
     /**
-     * We do this to ensure our Filter is only loaded once into Application Context
-     * <p>
-     * If using Spring Boot, any GenericFilterBean in the context will be automatically added to the filter chain.
+     * Ensure our Filter is only loaded once into Application Context
      */
     @Bean(name = "auth0AuthenticationFilterRegistration")
     public FilterRegistrationBean auth0AuthenticationFilterRegistration(final Auth0AuthenticationFilter filter) {
@@ -134,21 +185,27 @@ public class Auth0Config extends WebSecurityConfigurerAdapter {
         return filterRegistrationBean;
     }
 
+    /**
+     * Factory for OrderedRequestContextFilter
+     */
     @Bean
     public OrderedRequestContextFilter requestContextFilter() {
         return new OrderedRequestContextFilter();
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(auth0AuthenticationProvider());
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(final WebSecurity web) throws Exception {
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
 
+    /**
+     * Http Security Configuration
+     */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 

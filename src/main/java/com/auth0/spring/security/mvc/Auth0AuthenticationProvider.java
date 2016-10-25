@@ -30,7 +30,7 @@ import static com.auth0.jwt.pem.PemReader.readPublicKey;
 
 /**
  * Class that verifies the JWT token and when valid, it will set
- * the userdetails in the authentication object
+ * the UserDetails in the authentication object
  */
 public class Auth0AuthenticationProvider implements AuthenticationProvider,
         InitializingBean {
@@ -49,6 +49,17 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
     private Algorithm signingAlgorithm;
     private String publicKeyPath;
 
+    /**
+     * Performs authentication with the same contract as
+     * {@link org.springframework.security.authentication.AuthenticationManager#authenticate(Authentication)}
+     *
+     * Verifies the JWT Token on every request and only creates Principal if not already authenticated
+     *
+     * @param authentication the authentication request object.
+     *
+     * @return a fully authenticated object including credentials.
+     * @throws AuthenticationException if authentication fails.
+     */
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         try {
             // always verify JWT token
@@ -88,6 +99,9 @@ public class Auth0AuthenticationProvider implements AuthenticationProvider,
         return Auth0JWTToken.class.isAssignableFrom(authentication);
     }
 
+    /**
+     * Initialises configuration setup for the authentication provider
+     */
     public void afterPropertiesSet() throws Exception {
         if ((clientSecret == null) || (clientId == null)) {
             throw new IllegalStateException(

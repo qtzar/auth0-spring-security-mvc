@@ -17,16 +17,71 @@ public class Auth0UserDetails implements UserDetails {
 
     private static final long serialVersionUID = 2058797193125711681L;
 
+    /**
+     * The userId of the Auth0 normalized user profile
+     */
     private String userId;
+
+    /**
+     * The username of the Auth0 normalized user profile
+     */
     private String username;
+
+    /**
+     * The name assigned to the user profile
+     */
     private String name;
+
+    /**
+     * The email assigned to the user profile
+     */
     private String email;
+
+    /**
+     * The email verified or not
+     */
     private boolean emailVerified;
+
+    /**
+     * The nickname assigned to the user profile
+     */
     private String nickname;
+
+    /**
+     * The picture (gravatar) of the user profile
+     */
     private String picture;
+
+    /**
+     * Extra information of the profile that is not part of the normalized profile
+     * A map with user's extra information found in the profile
+     */
     private Map<String, Object> extraInfo;
+
+    /**
+     * The metadata objects can be used to store additional User Profile information.
+     * The user_metadata object should be used to store user attributes, such as user preferences,
+     * that don't impact what a user can access
+     */
     private Map<String, Object> userMetadata;
+
+    /**
+     * The metadata objects can be used to store additional User Profile information.
+     * The app_metadata object should be used for user attributes, such as a support plan, security roles,
+     * or access control groups, which can impact how an application functions and/or what the user can access.
+     */
+    private Map<String, Object> appMetadata;
+
+    /**
+     * List of the identities from a Identity Provider associated to the user.
+     */
     private List<UserIdentity> identities;
+
+    /**
+     * The Granted Authorities - Spring Security specific - gets populated by matching
+     * the AuthorityStrategy (ROLES or GROUPS) and populating contents of that type
+     * from the input Auth0User object
+     */
     private ArrayList<GrantedAuthority> authorities;
 
     public Auth0UserDetails(final Auth0User auth0User, final Auth0AuthorityStrategy authorityStrategy) {
@@ -48,12 +103,14 @@ public class Auth0UserDetails implements UserDetails {
         this.identities = auth0User.getIdentities();
         this.extraInfo = auth0User.getExtraInfo();
         this.userMetadata = auth0User.getUserMetadata();
+        this.appMetadata = auth0User.getAppMetadata();
         setupGrantedAuthorities(auth0User, authorityStrategy);
     }
 
 
     /**
-     * Currently support Groups and Roles only...
+     * Responsible for translating the GROUPS or ROLES from Auth0User into GrantedAuthority objects
+     * that is used by Spring Security Framework - Currently supports Groups and Roles only
      */
     private void setupGrantedAuthorities(final Auth0User auth0User, final Auth0AuthorityStrategy authorityStrategy) {
         this.authorities = new ArrayList<>();
@@ -118,6 +175,10 @@ public class Auth0UserDetails implements UserDetails {
         return Collections.unmodifiableMap(userMetadata);
     }
 
+    public Map<String, Object> getAppMetadata() {
+        return Collections.unmodifiableMap(appMetadata);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -142,7 +203,7 @@ public class Auth0UserDetails implements UserDetails {
     /**
      * Indicates whether the user's account has expired. An expired account cannot be
      * authenticated.
-     *
+     * <p>
      * This implementation shall return true by default
      *
      * @return <code>true</code> if the user's account is valid (ie non-expired),
@@ -156,7 +217,7 @@ public class Auth0UserDetails implements UserDetails {
     /**
      * Indicates whether the user is locked or unlocked. A locked user cannot be
      * authenticated.
-     *
+     * <p>
      * This implementation shall return true by default
      *
      * @return <code>true</code> if the user is not locked, <code>false</code> otherwise
@@ -169,7 +230,7 @@ public class Auth0UserDetails implements UserDetails {
     /**
      * Indicates whether the user's credentials (password) has expired. Expired
      * credentials prevent authentication.
-     *
+     * <p>
      * This implementation shall return true by default
      *
      * @return <code>true</code> if the user's credentials are valid (ie non-expired),

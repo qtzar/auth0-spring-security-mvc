@@ -94,7 +94,6 @@ auth0.loginRedirectOnSuccess: /portal/home
 auth0.loginRedirectOnFail: /login
 auth0.base64EncodedSecret: true
 auth0.authorityStrategy: ROLES
-auth0.servletFilterEnabled: false
 auth0.defaultAuth0WebSecurityEnabled: false
 auth0.signingAlgorithm: HS256
 auth0.publicKeyPath:
@@ -130,11 +129,11 @@ below for further info. The takeaway message is that this property value is a co
 
 `auth0.base64EncodedSecret` - This is a boolean value indicating whether the Secret used to verify the JWT is base64 encoded. Default is `true`
 
-`auth0.authorityStrategy` - This indicates whether authorization `claims` against the Principal shall be `GROUPS`, `ROLES` or `SCOPE` based. Default is `ROLES`
+`auth0.authorityStrategy` - This is the authority strategy being used - can be either ROLES, GROUPS, or SCOPE. Custom RULES configurable via dashboard may apply 
+ROLES or GROUPS claim on the ID Token whose values are the scope values representing the permissions granted.
 
-`auth0.servletFilterEnabled` - This is a boolean value that switches having an authentication filter enabled. Should be `false`
-
-`auth0.defaultAuth0WebSecurityEnabled` - This is a boolean value that switches having the default config enabled. Should be `false`
+`auth0.defaultAuth0WebSecurityEnabled` - This is a boolean value that switches having the default config enabled. Should be `false` unless (rare situation) you want 
+to disable the default Auth0Config altogether - for example completely replace it with your own configuration in entirety.
 
 The default JWT Signing Algorithm is `HS256`. This is HMAC SHA256, a symmetric crypographic algorithm (HMAC), that uses the `clientSecret` to
 verify a signed JWT token. However, if you wish to configure this library to use an alternate cryptographic algorithm then use the two
