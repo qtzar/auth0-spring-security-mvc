@@ -33,14 +33,14 @@ Get Auth0 Spring Security MVC via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>auth0-spring-security-mvc</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.3</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-compile 'com.auth0:auth0-spring-security-mvc:1.2.0'
+compile 'com.auth0:auth0-spring-security-mvc:1.2.3'
 ```
 
 ## The Oauth Server Side Protocol
