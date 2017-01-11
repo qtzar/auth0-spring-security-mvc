@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.auth0.spring.security.mvc.Auth0AutoConfiguration
